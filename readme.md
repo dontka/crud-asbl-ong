@@ -32,7 +32,7 @@ Le développement se fera en PHP pur (version 7.4 ou supérieure recommandée) e
 - **Livrables** : Diagramme d'architecture, document de conception générale.
  
 
-## Phase 2 : Conception de la Base de Données (Semaine 2)
+## Phase 2 : Conception de la Base de Données
 
 ### Étape 2.1 : Modélisation Conceptuelle
 - **Objectifs** : Créer un modèle de données abstrait.
