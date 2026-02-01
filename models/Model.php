@@ -95,6 +95,61 @@ abstract class Model
     }
 
     /**
+     * Search records by text in specified columns
+     * @param string $searchTerm
+     * @param array $searchColumns
+     * @param array $conditions Additional WHERE conditions
+     * @param string $orderBy
+     * @param int $limit
+     * @return array
+     */
+    public function search($searchTerm, $searchColumns = [], $conditions = [], $orderBy = '', $limit = null)
+    {
+        try {
+            $sql = "SELECT * FROM {$this->table}";
+            $params = [];
+
+            $whereClauses = [];
+
+            // Add search conditions
+            if (!empty($searchTerm) && !empty($searchColumns)) {
+                $searchConditions = [];
+                foreach ($searchColumns as $column) {
+                    $searchConditions[] = "{$column} LIKE ?";
+                    $params[] = "%{$searchTerm}%";
+                }
+                $whereClauses[] = "(" . implode(" OR ", $searchConditions) . ")";
+            }
+
+            // Add additional conditions
+            if (!empty($conditions)) {
+                $conditionClause = $this->buildWhereClause($conditions);
+                $whereClauses[] = $conditionClause['clause'];
+                $params = array_merge($params, $conditionClause['params']);
+            }
+
+            if (!empty($whereClauses)) {
+                $sql .= " WHERE " . implode(" AND ", $whereClauses);
+            }
+
+            if (!empty($orderBy)) {
+                $sql .= " ORDER BY {$orderBy}";
+            }
+
+            if ($limit !== null) {
+                $sql .= " LIMIT {$limit}";
+            }
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            $this->logError("search failed: " . $e->getMessage());
+            throw new Exception("Database error: Unable to search records");
+        }
+    }
+
+    /**
      * Save a record (insert or update)
      * @param array $data
      * @return mixed The ID of the inserted/updated record

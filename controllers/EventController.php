@@ -32,7 +32,7 @@ class EventController extends Controller
         $events = $this->eventModel->findAll($conditions, 'event_date DESC');
         $flash = $this->getFlash();
 
-        $this->render('events/index', [
+        $this->renderContent('events/index', [
             'events' => $events,
             'status' => $status,
             'flash' => $flash
@@ -47,8 +47,13 @@ class EventController extends Controller
         $this->requireAuth();
         $flash = $this->getFlash();
 
-        $this->render('events/create', [
-            'flash' => $flash
+        // Get all users for organizer selection
+        $userModel = new User();
+        $organizers = $userModel->findAll([], 'username ASC');
+
+        $this->renderContent('events/create', [
+            'flash' => $flash,
+            'organizers' => $organizers
         ]);
     }
 
@@ -75,7 +80,7 @@ class EventController extends Controller
             $this->eventModel->save($eventData);
 
             $this->setFlash('success', 'Event created successfully.');
-            $this->redirect('/events.php');
+            $this->redirect('/events');
         } catch (Exception $e) {
             $this->handleValidationError($e);
         }
@@ -90,18 +95,18 @@ class EventController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/events.php');
+            $this->redirect('/events');
         }
 
         $event = $this->eventModel->findById($id);
         if (!$event) {
             $this->setFlash('error', 'Event not found.');
-            $this->redirect('/events.php');
+            $this->redirect('/events');
         }
 
         $flash = $this->getFlash();
 
-        $this->render('events/show', [
+        $this->renderContent('events/show', [
             'event' => $event,
             'flash' => $flash
         ]);
@@ -116,20 +121,25 @@ class EventController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/events.php');
+            $this->redirect('/events');
         }
 
         $event = $this->eventModel->findById($id);
         if (!$event) {
             $this->setFlash('error', 'Event not found.');
-            $this->redirect('/events.php');
+            $this->redirect('/events');
         }
 
         $flash = $this->getFlash();
 
-        $this->render('events/edit', [
+        // Get all users for organizer selection
+        $userModel = new User();
+        $organizers = $userModel->findAll([], 'username ASC');
+
+        $this->renderContent('events/edit', [
             'event' => $event,
-            'flash' => $flash
+            'flash' => $flash,
+            'organizers' => $organizers
         ]);
     }
 
@@ -143,7 +153,7 @@ class EventController extends Controller
         $id = $data['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/events.php');
+            $this->redirect('/events');
         }
 
         try {
@@ -162,7 +172,7 @@ class EventController extends Controller
             $this->eventModel->save($eventData);
 
             $this->setFlash('success', 'Event updated successfully.');
-            $this->redirect('/events.php');
+            $this->redirect('/events');
         } catch (Exception $e) {
             $this->handleValidationError($e);
         }
@@ -177,7 +187,7 @@ class EventController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/events.php');
+            $this->redirect('/events');
         }
 
         try {
@@ -187,6 +197,6 @@ class EventController extends Controller
             $this->setFlash('error', 'Failed to delete event: ' . $e->getMessage());
         }
 
-        $this->redirect('/events.php');
+        $this->redirect('/events');
     }
 }

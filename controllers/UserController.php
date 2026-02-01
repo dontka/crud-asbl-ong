@@ -22,11 +22,11 @@ class UserController extends Controller
     public function login()
     {
         if ($this->isAuthenticated()) {
-            $this->redirect('/dashboard.php');
+            $this->redirect('/dashboard');
         }
 
         $flash = $this->getFlash();
-        $this->render('auth/login', [
+        $this->renderContent('auth/login', [
             'flash' => $flash
         ]);
     }
@@ -37,14 +37,14 @@ class UserController extends Controller
     public function authenticate()
     {
         if ($this->isAuthenticated()) {
-            $this->redirect('/dashboard.php');
+            $this->redirect('/dashboard');
         }
 
         $data = $this->getPostData();
 
         if (empty($data['username']) || empty($data['password'])) {
             $this->setFlash('error', 'Username and password are required.');
-            $this->redirect('/login.php');
+            $this->redirect('/login');
         }
 
         $user = $this->userModel->authenticate($data['username'], $data['password']);
@@ -53,10 +53,10 @@ class UserController extends Controller
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user'] = $user;
             $this->setFlash('success', 'Welcome back, ' . $user['username'] . '!');
-            $this->redirect('/dashboard.php');
+            $this->redirect('/dashboard');
         } else {
             $this->setFlash('error', 'Invalid username or password.');
-            $this->redirect('/login.php');
+            $this->redirect('/login');
         }
     }
 
@@ -67,7 +67,7 @@ class UserController extends Controller
     {
         session_destroy();
         $this->setFlash('success', 'You have been logged out.');
-        $this->redirect('/login.php');
+        $this->redirect('/login');
     }
 
     /**
@@ -79,7 +79,7 @@ class UserController extends Controller
         $user = $this->getCurrentUser();
         $flash = $this->getFlash();
 
-        $this->render('users/profile', [
+        $this->renderContent('users/profile', [
             'user' => $user,
             'flash' => $flash
         ]);
@@ -118,7 +118,7 @@ class UserController extends Controller
             $this->handleValidationError($e);
         }
 
-        $this->redirect('/profile.php');
+        $this->redirect('/profile');
     }
 
     /**
@@ -131,7 +131,7 @@ class UserController extends Controller
         $users = $this->userModel->findAll([], 'username ASC');
         $flash = $this->getFlash();
 
-        $this->render('users/index', [
+        $this->renderContent('users/index', [
             'users' => $users,
             'flash' => $flash
         ]);
@@ -145,7 +145,7 @@ class UserController extends Controller
         $this->requireRole('admin');
         $flash = $this->getFlash();
 
-        $this->render('users/create', [
+        $this->renderContent('users/create', [
             'flash' => $flash
         ]);
     }
@@ -170,7 +170,7 @@ class UserController extends Controller
             $this->userModel->save($userData);
 
             $this->setFlash('success', 'User created successfully.');
-            $this->redirect('/users.php');
+            $this->redirect('/users');
         } catch (Exception $e) {
             $this->handleValidationError($e);
         }
@@ -185,18 +185,18 @@ class UserController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/users.php');
+            $this->redirect('/users');
         }
 
         $user = $this->userModel->findById($id);
         if (!$user) {
             $this->setFlash('error', 'User not found.');
-            $this->redirect('/users.php');
+            $this->redirect('/users');
         }
 
         $flash = $this->getFlash();
 
-        $this->render('users/edit', [
+        $this->renderContent('users/edit', [
             'user' => $user,
             'flash' => $flash
         ]);
@@ -212,7 +212,7 @@ class UserController extends Controller
         $id = $data['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/users.php');
+            $this->redirect('/users');
         }
 
         try {
@@ -232,7 +232,7 @@ class UserController extends Controller
             $this->userModel->save($userData);
 
             $this->setFlash('success', 'User updated successfully.');
-            $this->redirect('/users.php');
+            $this->redirect('/users');
         } catch (Exception $e) {
             $this->handleValidationError($e);
         }
@@ -247,7 +247,7 @@ class UserController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/users.php');
+            $this->redirect('/users');
         }
 
         try {
@@ -257,6 +257,6 @@ class UserController extends Controller
             $this->setFlash('error', 'Failed to delete user: ' . $e->getMessage());
         }
 
-        $this->redirect('/users.php');
+        $this->redirect('/users');
     }
 }

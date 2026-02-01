@@ -3,8 +3,8 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1><?php echo htmlspecialchars($member['first_name'] . ' ' . $member['last_name']); ?></h1>
     <div>
-        <a href="<?php echo BASE_URL; ?>/members.php?action=edit&id=<?php echo $member['id']; ?>" class="btn btn-warning">Modifier</a>
-        <a href="<?php echo BASE_URL; ?>/members.php" class="btn btn-secondary">Retour à la liste</a>
+        <a href="<?php echo BASE_URL; ?>/members?action=edit&id=<?php echo $member['id']; ?>" class="btn btn-warning">Modifier</a>
+        <a href="<?php echo BASE_URL; ?>/members" class="btn btn-secondary">Retour à la liste</a>
     </div>
 </div>
 
@@ -58,12 +58,12 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <a href="<?php echo BASE_URL; ?>/members.php?action=edit&id=<?php echo $member['id']; ?>" class="btn btn-warning">Modifier les informations</a>
+                    <a href="<?php echo BASE_URL; ?>/members?action=edit&id=<?php echo $member['id']; ?>" class="btn btn-warning">Modifier les informations</a>
                     <a href="mailto:<?php echo htmlspecialchars($member['email']); ?>" class="btn btn-info">Envoyer un email</a>
                     <?php if (!empty($member['phone'])): ?>
                         <a href="tel:<?php echo htmlspecialchars($member['phone']); ?>" class="btn btn-info">Appeler</a>
                     <?php endif; ?>
-                    <a href="<?php echo BASE_URL; ?>/members.php?action=delete&id=<?php echo $member['id']; ?>" class="btn btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer ce membre ? Cette action est irréversible.">Supprimer le membre</a>
+                    <a href="<?php echo BASE_URL; ?>/members?action=delete&id=<?php echo $member['id']; ?>" class="btn btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer ce membre ? Cette action est irréversible.">Supprimer le membre</a>
                 </div>
             </div>
         </div>

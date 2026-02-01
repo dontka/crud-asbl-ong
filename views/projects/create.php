@@ -2,14 +2,15 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Ajouter un Projet</h1>
-    <a href="<?php echo BASE_URL; ?>/projects.php" class="btn btn-secondary">Retour à la liste</a>
+    <a href="<?php echo BASE_URL; ?>/projects" class="btn btn-secondary">Retour à la liste</a>
 </div>
 
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card">
             <div class="card-body">
-                <form action="<?php echo BASE_URL; ?>/projects.php?action=store" method="post" data-validate>
+                <form action="/projects" method="post" data-validate>
+                    <input type="hidden" name="action" value="store">
                     <div class="form-group">
                         <label for="name" class="form-label">Nom du projet *</label>
                         <input type="text" class="form-control" id="name" name="name" required>
@@ -66,7 +67,7 @@
 
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">Créer le projet</button>
-                        <a href="<?php echo BASE_URL; ?>/projects.php" class="btn btn-secondary">Annuler</a>
+                        <a href="<?php echo BASE_URL; ?>/projects" class="btn btn-secondary">Annuler</a>
                     </div>
                 </form>
             </div>

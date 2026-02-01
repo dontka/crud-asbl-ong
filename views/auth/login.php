@@ -7,7 +7,13 @@
                 <h3 class="card-title">Connexion</h3>
             </div>
             <div class="card-body">
-                <form action="<?php echo BASE_URL; ?>/login.php" method="post" data-validate>
+                <?php if (isset($flash) && $flash): ?>
+                    <div class="alert alert-<?php echo $flash['type'] === 'error' ? 'danger' : $flash['type']; ?>">
+                        <?php echo htmlspecialchars($flash['message']); ?>
+                    </div>
+                <?php endif; ?>
+
+                <form action="/login" method="post" data-validate>
                     <div class="form-group">
                         <label for="username" class="form-label">Nom d'utilisateur</label>
                         <input type="text" class="form-control" id="username" name="username" required>

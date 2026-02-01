@@ -2,7 +2,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Événements</h1>
-    <a href="<?php echo BASE_URL; ?>/events.php?action=create" class="btn btn-primary">Ajouter un événement</a>
+    <a href="<?php echo BASE_URL; ?>/events?action=create" class="btn btn-primary">Ajouter un événement</a>
 </div>
 
 <!-- Filters -->
@@ -25,7 +25,7 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label">&nbsp;</label>
-                <a href="<?php echo BASE_URL; ?>/events.php" class="btn btn-outline-secondary w-100">Réinitialiser</a>
+                <a href="<?php echo BASE_URL; ?>/events" class="btn btn-outline-secondary w-100">Réinitialiser</a>
             </div>
         </form>
     </div>
@@ -56,16 +56,16 @@
                                 <td><?php echo $event['max_participants'] ?? '-'; ?></td>
                                 <td>
                                     <span class="badge bg-<?php
-                                        echo match($event['status']) {
-                                            'planned' => 'secondary',
-                                            'ongoing' => 'success',
-                                            'completed' => 'info',
-                                            'cancelled' => 'danger',
-                                            default => 'secondary'
-                                        };
-                                    ?>">
+                                                            echo match ($event['status']) {
+                                                                'planned' => 'secondary',
+                                                                'ongoing' => 'success',
+                                                                'completed' => 'info',
+                                                                'cancelled' => 'danger',
+                                                                default => 'secondary'
+                                                            };
+                                                            ?>">
                                         <?php
-                                        echo match($event['status']) {
+                                        echo match ($event['status']) {
                                             'planned' => 'Planifié',
                                             'ongoing' => 'En cours',
                                             'completed' => 'Terminé',
@@ -76,9 +76,9 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="<?php echo BASE_URL; ?>/events.php?action=show&id=<?php echo $event['id']; ?>" class="btn btn-sm btn-info">Voir</a>
-                                    <a href="<?php echo BASE_URL; ?>/events.php?action=edit&id=<?php echo $event['id']; ?>" class="btn btn-sm btn-warning">Modifier</a>
-                                    <a href="<?php echo BASE_URL; ?>/events.php?action=delete&id=<?php echo $event['id']; ?>" class="btn btn-sm btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer cet événement ?">Supprimer</a>
+                                    <a href="<?php echo BASE_URL; ?>/events?action=show&id=<?php echo $event['id']; ?>" class="btn btn-sm btn-info">Voir</a>
+                                    <a href="<?php echo BASE_URL; ?>/events?action=edit&id=<?php echo $event['id']; ?>" class="btn btn-sm btn-warning">Modifier</a>
+                                    <a href="<?php echo BASE_URL; ?>/events?action=delete&id=<?php echo $event['id']; ?>" class="btn btn-sm btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer cet événement ?">Supprimer</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -88,7 +88,7 @@
         <?php else: ?>
             <div class="text-center py-5">
                 <p class="text-muted">Aucun événement trouvé.</p>
-                <a href="<?php echo BASE_URL; ?>/events.php?action=create" class="btn btn-primary">Ajouter le premier événement</a>
+                <a href="<?php echo BASE_URL; ?>/events?action=create" class="btn btn-primary">Ajouter le premier événement</a>
             </div>
         <?php endif; ?>
     </div>

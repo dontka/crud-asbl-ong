@@ -31,10 +31,15 @@ class MemberController extends Controller
             $conditions['status'] = $status;
         }
 
-        $members = $this->memberModel->findAll($conditions, 'last_name ASC, first_name ASC');
+        if (!empty($search)) {
+            $members = $this->memberModel->search($search, ['first_name', 'last_name', 'email'], $conditions, 'last_name ASC, first_name ASC');
+        } else {
+            $members = $this->memberModel->findAll($conditions, 'last_name ASC, first_name ASC');
+        }
+
         $flash = $this->getFlash();
 
-        $this->render('members/index', [
+        $this->renderContent('members/index', [
             'members' => $members,
             'search' => $search,
             'status' => $status,
@@ -50,7 +55,7 @@ class MemberController extends Controller
         $this->requireAuth();
         $flash = $this->getFlash();
 
-        $this->render('members/create', [
+        $this->renderContent('members/create', [
             'flash' => $flash
         ]);
     }
@@ -78,7 +83,7 @@ class MemberController extends Controller
             $this->memberModel->save($memberData);
 
             $this->setFlash('success', 'Member created successfully.');
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         } catch (Exception $e) {
             $this->handleValidationError($e);
         }
@@ -93,18 +98,18 @@ class MemberController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         }
 
         $member = $this->memberModel->findById($id);
         if (!$member) {
             $this->setFlash('error', 'Member not found.');
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         }
 
         $flash = $this->getFlash();
 
-        $this->render('members/show', [
+        $this->renderContent('members/show', [
             'member' => $member,
             'flash' => $flash
         ]);
@@ -119,18 +124,18 @@ class MemberController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         }
 
         $member = $this->memberModel->findById($id);
         if (!$member) {
             $this->setFlash('error', 'Member not found.');
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         }
 
         $flash = $this->getFlash();
 
-        $this->render('members/edit', [
+        $this->renderContent('members/edit', [
             'member' => $member,
             'flash' => $flash
         ]);
@@ -146,7 +151,7 @@ class MemberController extends Controller
         $id = $data['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         }
 
         try {
@@ -165,7 +170,7 @@ class MemberController extends Controller
             $this->memberModel->save($memberData);
 
             $this->setFlash('success', 'Member updated successfully.');
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         } catch (Exception $e) {
             $this->handleValidationError($e);
         }
@@ -180,7 +185,7 @@ class MemberController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         }
 
         try {
@@ -190,7 +195,7 @@ class MemberController extends Controller
             $this->setFlash('error', 'Failed to delete member: ' . $e->getMessage());
         }
 
-        $this->redirect('/members.php');
+        $this->redirect('/members');
     }
 
     /**
@@ -202,16 +207,67 @@ class MemberController extends Controller
         $query = $this->getQueryData()['q'] ?? '';
 
         if (empty($query)) {
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         }
 
         $members = $this->memberModel->search($query);
         $flash = $this->getFlash();
 
-        $this->render('members/search', [
+        $this->renderContent('members/search', [
             'members' => $members,
             'query' => $query,
             'flash' => $flash
         ]);
+    }
+
+    /**
+     * Export members to CSV
+     */
+    public function export()
+    {
+        $this->requireAuth();
+
+        $search = $this->getQueryData()['search'] ?? '';
+        $status = $this->getQueryData()['status'] ?? '';
+
+        $conditions = [];
+        if (!empty($status)) {
+            $conditions['status'] = $status;
+        }
+
+        if (!empty($search)) {
+            $members = $this->memberModel->search($search, ['first_name', 'last_name', 'email'], $conditions, 'last_name ASC, first_name ASC');
+        } else {
+            $members = $this->memberModel->findAll($conditions, 'last_name ASC, first_name ASC');
+        }
+
+        // Set headers for CSV download
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=members_' . date('Y-m-d') . '.csv');
+
+        // Create output stream
+        $output = fopen('php://output', 'w');
+
+        // Add BOM for UTF-8
+        fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+        // CSV headers
+        fputcsv($output, ['ID', 'First Name', 'Last Name', 'Email', 'Phone', 'Join Date', 'Status']);
+
+        // CSV data
+        foreach ($members as $member) {
+            fputcsv($output, [
+                $member['id'],
+                $member['first_name'],
+                $member['last_name'],
+                $member['email'],
+                $member['phone'] ?? '',
+                $member['join_date'],
+                $member['status']
+            ]);
+        }
+
+        fclose($output);
+        exit;
     }
 }

@@ -32,7 +32,7 @@ class ProjectController extends Controller
         $projects = $this->projectModel->findAll($conditions, 'name ASC');
         $flash = $this->getFlash();
 
-        $this->render('projects/index', [
+        $this->renderContent('projects/index', [
             'projects' => $projects,
             'status' => $status,
             'flash' => $flash
@@ -47,7 +47,7 @@ class ProjectController extends Controller
         $this->requireAuth();
         $flash = $this->getFlash();
 
-        $this->render('projects/create', [
+        $this->renderContent('projects/create', [
             'flash' => $flash
         ]);
     }
@@ -75,7 +75,7 @@ class ProjectController extends Controller
             $this->projectModel->save($projectData);
 
             $this->setFlash('success', 'Project created successfully.');
-            $this->redirect('/projects.php');
+            $this->redirect('/projects');
         } catch (Exception $e) {
             $this->handleValidationError($e);
         }
@@ -90,18 +90,18 @@ class ProjectController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/projects.php');
+            $this->redirect('/projects');
         }
 
         $project = $this->projectModel->findById($id);
         if (!$project) {
             $this->setFlash('error', 'Project not found.');
-            $this->redirect('/projects.php');
+            $this->redirect('/projects');
         }
 
         $flash = $this->getFlash();
 
-        $this->render('projects/show', [
+        $this->renderContent('projects/show', [
             'project' => $project,
             'flash' => $flash
         ]);
@@ -116,18 +116,18 @@ class ProjectController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/projects.php');
+            $this->redirect('/projects');
         }
 
         $project = $this->projectModel->findById($id);
         if (!$project) {
             $this->setFlash('error', 'Project not found.');
-            $this->redirect('/projects.php');
+            $this->redirect('/projects');
         }
 
         $flash = $this->getFlash();
 
-        $this->render('projects/edit', [
+        $this->renderContent('projects/edit', [
             'project' => $project,
             'flash' => $flash
         ]);
@@ -143,7 +143,7 @@ class ProjectController extends Controller
         $id = $data['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/projects.php');
+            $this->redirect('/projects');
         }
 
         try {
@@ -162,7 +162,7 @@ class ProjectController extends Controller
             $this->projectModel->save($projectData);
 
             $this->setFlash('success', 'Project updated successfully.');
-            $this->redirect('/projects.php');
+            $this->redirect('/projects');
         } catch (Exception $e) {
             $this->handleValidationError($e);
         }
@@ -177,7 +177,7 @@ class ProjectController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/projects.php');
+            $this->redirect('/projects');
         }
 
         try {
@@ -187,6 +187,6 @@ class ProjectController extends Controller
             $this->setFlash('error', 'Failed to delete project: ' . $e->getMessage());
         }
 
-        $this->redirect('/projects.php');
+        $this->redirect('/projects');
     }
 }

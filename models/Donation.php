@@ -69,8 +69,51 @@ class Donation extends Model
     }
 
     /**
-     * Get total donations amount
-     * @param array $conditions Optional conditions
+     * Get donations by payment method
+     * @param string $method
+     * @return array
+     */
+    public function getDonationsByPaymentMethod($method)
+    {
+        return $this->findBy('payment_method', $method, 'donation_date DESC');
+    }
+
+    /**
+     * Get donations with project names
+     * @param array $conditions Optional WHERE conditions
+     * @param string $orderBy Optional ORDER BY clause
+     * @return array
+     */
+    public function getDonationsWithProjects($conditions = [], $orderBy = '')
+    {
+        try {
+            $sql = "SELECT d.*, p.name as project_name FROM {$this->table} d LEFT JOIN projects p ON d.project_id = p.id";
+            $params = [];
+
+            if (!empty($conditions)) {
+                $whereClause = $this->buildWhereClause($conditions);
+                $sql .= " WHERE " . $whereClause['clause'];
+                $params = $whereClause['params'];
+            }
+
+            if (!empty($orderBy)) {
+                $sql .= " ORDER BY {$orderBy}";
+            } else {
+                $sql .= " ORDER BY d.donation_date DESC";
+            }
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            $this->logError("getDonationsWithProjects failed: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Get total amount of donations
+     * @param array $conditions Optional WHERE conditions
      * @return float
      */
     public function getTotalAmount($conditions = [])
@@ -91,36 +134,34 @@ class Donation extends Model
             return (float) ($result['total'] ?? 0);
         } catch (PDOException $e) {
             $this->logError("getTotalAmount failed: " . $e->getMessage());
-            throw new Exception("Database error: Unable to calculate total amount");
+            return 0;
         }
     }
 
     /**
-     * Get donations by payment method
-     * @param string $method
-     * @return array
+     * Get total count of donations
+     * @param array $conditions Optional WHERE conditions
+     * @return int
      */
-    public function getDonationsByPaymentMethod($method)
-    {
-        return $this->findBy('payment_method', $method, 'donation_date DESC');
-    }
-
-    /**
-     * Search donations by donor name or email
-     * @param string $query
-     * @return array
-     */
-    public function searchByDonor($query)
+    public function getTotalCount($conditions = [])
     {
         try {
-            $sql = "SELECT * FROM {$this->table} WHERE donor_name LIKE ? OR donor_email LIKE ? ORDER BY donation_date DESC";
-            $searchTerm = "%{$query}%";
+            $sql = "SELECT COUNT(*) as total FROM {$this->table}";
+            $params = [];
+
+            if (!empty($conditions)) {
+                $whereClause = $this->buildWhereClause($conditions);
+                $sql .= " WHERE " . $whereClause['clause'];
+                $params = $whereClause['params'];
+            }
+
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([$searchTerm, $searchTerm]);
-            return $stmt->fetchAll();
+            $stmt->execute($params);
+            $result = $stmt->fetch();
+            return (int) ($result['total'] ?? 0);
         } catch (PDOException $e) {
-            $this->logError("searchByDonor failed: " . $e->getMessage());
-            throw new Exception("Database error: Unable to search donations");
+            $this->logError("getTotalCount failed: " . $e->getMessage());
+            return 0;
         }
     }
 

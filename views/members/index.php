@@ -2,7 +2,12 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Membres</h1>
-    <a href="<?php echo BASE_URL; ?>/members.php?action=create" class="btn btn-primary">Ajouter un membre</a>
+    <div>
+        <a href="<?php echo BASE_URL; ?>/members?action=export<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?><?php echo !empty($status) ? '&status=' . urlencode($status) : ''; ?>" class="btn btn-success me-2">
+            <i class="fas fa-download"></i> Exporter CSV
+        </a>
+        <a href="<?php echo BASE_URL; ?>/members?action=create" class="btn btn-primary">Ajouter un membre</a>
+    </div>
 </div>
 
 <!-- Filters -->
@@ -27,7 +32,7 @@
             </div>
             <div class="col-md-2">
                 <label class="form-label">&nbsp;</label>
-                <a href="<?php echo BASE_URL; ?>/members.php" class="btn btn-outline-secondary w-100">Réinitialiser</a>
+                <a href="<?php echo BASE_URL; ?>/members" class="btn btn-outline-secondary w-100">Réinitialiser</a>
             </div>
         </form>
     </div>
@@ -64,9 +69,9 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="<?php echo BASE_URL; ?>/members.php?action=show&id=<?php echo $member['id']; ?>" class="btn btn-sm btn-info">Voir</a>
-                                    <a href="<?php echo BASE_URL; ?>/members.php?action=edit&id=<?php echo $member['id']; ?>" class="btn btn-sm btn-warning">Modifier</a>
-                                    <a href="<?php echo BASE_URL; ?>/members.php?action=delete&id=<?php echo $member['id']; ?>" class="btn btn-sm btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer ce membre ?">Supprimer</a>
+                                    <a href="<?php echo BASE_URL; ?>/members?action=show&id=<?php echo $member['id']; ?>" class="btn btn-sm btn-info">Voir</a>
+                                    <a href="<?php echo BASE_URL; ?>/members?action=edit&id=<?php echo $member['id']; ?>" class="btn btn-sm btn-warning">Modifier</a>
+                                    <a href="<?php echo BASE_URL; ?>/members?action=delete&id=<?php echo $member['id']; ?>" class="btn btn-sm btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer ce membre ?">Supprimer</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -76,7 +81,7 @@
         <?php else: ?>
             <div class="text-center py-5">
                 <p class="text-muted">Aucun membre trouvé.</p>
-                <a href="<?php echo BASE_URL; ?>/members.php?action=create" class="btn btn-primary">Ajouter le premier membre</a>
+                <a href="<?php echo BASE_URL; ?>/members?action=create" class="btn btn-primary">Ajouter le premier membre</a>
             </div>
         <?php endif; ?>
     </div>

@@ -120,7 +120,7 @@ Le développement se fera en PHP pur (version 7.4 ou supérieure recommandée) e
 - **Durée** : 3 jours.
 - **Validation** : Tester via des requêtes HTTP simulées.
 
-## Phase 5 : Développement du Frontend
+## Phase 6 : Tests, Sécurité et Optimisation
 
 ### Étape 5.1 : Templates et Vues de Base
 - **Objectifs** : Créer des vues réutilisables.
@@ -150,7 +150,7 @@ Le développement se fera en PHP pur (version 7.4 ou supérieure recommandée) e
 - **Livrables** : Dashboard et pages avancées.
 - **Durée** : 2 jours.
 
-## Phase 6 : Tests, Sécurité et Optimisation (Semaine 8)
+## Phase 6 : Tests, Sécurité et Optimisation
 
 ### Étape 6.1 : Tests Intégrés
 - **Objectifs** : Valider le système complet.
@@ -234,3 +234,4 @@ Le développement se fera en PHP pur (version 7.4 ou supérieure recommandée) e
 ## Conclusion
 
 Ce plan progressif et évolutif permet de construire le système CRUD de manière itérative, en validant chaque étape avant de passer à la suivante. Chaque phase s'appuie sur la précédente, facilitant les retours en arrière si nécessaire. Pour l'évolutivité, l'architecture modulaire permet d'ajouter des entités sans refactoriser tout le code. Si des imprévus surviennent, ajustez les durées et priorisez les tests. Contactez-moi pour des détails supplémentaires ou des exemples de code.
+Implémenter la pagination et le tri dans les listes de données pour améliorer les performances avec de gros volumes.
