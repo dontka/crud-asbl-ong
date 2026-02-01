@@ -315,3 +315,57 @@ Pour toute question technique ou support :
 ---
 
 *Dernière mise à jour : Février 2026*
+
+---
+
+# Plan de Développement : Fonctionnalités Avancées
+
+## Objectif
+Élever le système CRUD ASBL-ONG vers une plateforme moderne, collaborative et intelligente, adaptée à des besoins évolués d’une organisation.
+
+## Axes de Développement
+
+### 1. API & Intégration
+- Développer une API RESTful sécurisée (authentification JWT, gestion des droits par endpoint)
+- Ajouter une documentation interactive (Swagger/OpenAPI)
+- Intégration possible avec des applications mobiles ou tierces
+
+### 2. Collaboration & Communication
+- Système de notifications (email, in-app, SMS)
+- Messagerie interne entre membres
+- Gestion des commentaires sur projets/événements
+
+### 3. Tableaux de Bord & Analytique
+- Dashboard personnalisable avec widgets (statistiques, graphiques)
+- Export de rapports (PDF, Excel)
+- Filtres avancés et recherche multi-critères
+
+### 4. Gestion Avancée des Droits
+- Rôles personnalisés et permissions fines (RBAC)
+- Historique des actions (audit log)
+- Gestion des accès temporaires ou par projet
+
+### 5. Automatisation & Intelligence
+- Automatisation de tâches récurrentes (rappels, relances)
+- Suggestions intelligentes (ex : matching bénévoles/projets)
+- Détection d’anomalies (sécurité, activité suspecte)
+
+### 6. Expérience Utilisateur
+- Interface responsive et mobile-friendly
+- Accessibilité renforcée (WCAG)
+- Personnalisation de l’interface utilisateur
+
+### 7. Sécurité Renforcée
+- 2FA (authentification à deux facteurs)
+- Surveillance et alertes en temps réel
+- Sauvegardes automatiques et restauration rapide
+
+## Étapes Recommandées
+1. Recueil des besoins avancés auprès des utilisateurs
+2. Rédaction de spécifications détaillées pour chaque axe
+3. Prototypage rapide des modules critiques
+4. Développement itératif avec tests automatisés
+5. Déploiement progressif et documentation continue
+
+---
+*Ce plan vise à guider l’évolution du projet vers un outil robuste, sécurisé et évolutif, répondant aux standards modernes.*
