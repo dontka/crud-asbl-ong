@@ -1,0 +1,5 @@
+# Windows Hosts File Entry
+# Add this line to C:\Windows\System32\drivers\etc\hosts
+# (Requires administrator privileges)
+
+127.0.0.1 crud-asbl-ong.test
