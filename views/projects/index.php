@@ -2,7 +2,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Projets</h1>
-    <a href="<?php echo BASE_URL; ?>/projects.php?action=create" class="btn btn-primary">Ajouter un projet</a>
+    <a href="<?php echo BASE_URL; ?>/projects?action=create" class="btn btn-primary">Ajouter un projet</a>
 </div>
 
 <!-- Filters -->
@@ -25,7 +25,7 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label">&nbsp;</label>
-                <a href="<?php echo BASE_URL; ?>/projects.php" class="btn btn-outline-secondary w-100">Réinitialiser</a>
+                <a href="<?php echo BASE_URL; ?>/projects" class="btn btn-outline-secondary w-100">Réinitialiser</a>
             </div>
         </form>
     </div>
@@ -78,9 +78,9 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="<?php echo BASE_URL; ?>/projects.php?action=show&id=<?php echo $project['id']; ?>" class="btn btn-sm btn-info">Voir</a>
-                                    <a href="<?php echo BASE_URL; ?>/projects.php?action=edit&id=<?php echo $project['id']; ?>" class="btn btn-sm btn-warning">Modifier</a>
-                                    <a href="<?php echo BASE_URL; ?>/projects.php?action=delete&id=<?php echo $project['id']; ?>" class="btn btn-sm btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer ce projet ?">Supprimer</a>
+                                    <a href="<?php echo BASE_URL; ?>/projects?action=show&id=<?php echo $project['id']; ?>" class="btn btn-sm btn-info">Voir</a>
+                                    <a href="<?php echo BASE_URL; ?>/projects?action=edit&id=<?php echo $project['id']; ?>" class="btn btn-sm btn-warning">Modifier</a>
+                                    <a href="<?php echo BASE_URL; ?>/projects?action=delete&id=<?php echo $project['id']; ?>" class="btn btn-sm btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer ce projet ?">Supprimer</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -90,7 +90,7 @@
         <?php else: ?>
             <div class="text-center py-5">
                 <p class="text-muted">Aucun projet trouvé.</p>
-                <a href="<?php echo BASE_URL; ?>/projects.php?action=create" class="btn btn-primary">Ajouter le premier projet</a>
+                <a href="<?php echo BASE_URL; ?>/projects?action=create" class="btn btn-primary">Ajouter le premier projet</a>
             </div>
         <?php endif; ?>
     </div>

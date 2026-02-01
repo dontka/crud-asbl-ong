@@ -34,7 +34,7 @@ class MemberController extends Controller
         $members = $this->memberModel->findAll($conditions, 'last_name ASC, first_name ASC');
         $flash = $this->getFlash();
 
-        $this->render('members/index', [
+        $this->renderContent('members/index', [
             'members' => $members,
             'search' => $search,
             'status' => $status,
@@ -50,7 +50,7 @@ class MemberController extends Controller
         $this->requireAuth();
         $flash = $this->getFlash();
 
-        $this->render('members/create', [
+        $this->renderContent('members/create', [
             'flash' => $flash
         ]);
     }
@@ -78,7 +78,7 @@ class MemberController extends Controller
             $this->memberModel->save($memberData);
 
             $this->setFlash('success', 'Member created successfully.');
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         } catch (Exception $e) {
             $this->handleValidationError($e);
         }
@@ -93,18 +93,18 @@ class MemberController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         }
 
         $member = $this->memberModel->findById($id);
         if (!$member) {
             $this->setFlash('error', 'Member not found.');
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         }
 
         $flash = $this->getFlash();
 
-        $this->render('members/show', [
+        $this->renderContent('members/show', [
             'member' => $member,
             'flash' => $flash
         ]);
@@ -119,18 +119,18 @@ class MemberController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         }
 
         $member = $this->memberModel->findById($id);
         if (!$member) {
             $this->setFlash('error', 'Member not found.');
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         }
 
         $flash = $this->getFlash();
 
-        $this->render('members/edit', [
+        $this->renderContent('members/edit', [
             'member' => $member,
             'flash' => $flash
         ]);
@@ -146,7 +146,7 @@ class MemberController extends Controller
         $id = $data['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         }
 
         try {
@@ -165,7 +165,7 @@ class MemberController extends Controller
             $this->memberModel->save($memberData);
 
             $this->setFlash('success', 'Member updated successfully.');
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         } catch (Exception $e) {
             $this->handleValidationError($e);
         }
@@ -180,7 +180,7 @@ class MemberController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         }
 
         try {
@@ -190,7 +190,7 @@ class MemberController extends Controller
             $this->setFlash('error', 'Failed to delete member: ' . $e->getMessage());
         }
 
-        $this->redirect('/members.php');
+        $this->redirect('/members');
     }
 
     /**
@@ -202,13 +202,13 @@ class MemberController extends Controller
         $query = $this->getQueryData()['q'] ?? '';
 
         if (empty($query)) {
-            $this->redirect('/members.php');
+            $this->redirect('/members');
         }
 
         $members = $this->memberModel->search($query);
         $flash = $this->getFlash();
 
-        $this->render('members/search', [
+        $this->renderContent('members/search', [
             'members' => $members,
             'query' => $query,
             'flash' => $flash

@@ -19,7 +19,7 @@
     <header class="header">
         <nav class="navbar">
             <div class="navbar-brand">
-                <a href="<?php echo BASE_URL; ?>/dashboard.php">
+                <a href="<?php echo BASE_URL; ?>/dashboard">
                     <i class="fas fa-heart"></i>
                     <?php echo APP_NAME; ?>
                 </a>
@@ -33,38 +33,38 @@
             <ul class="navbar-nav">
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <li class="nav-item">
-                        <a href="<?php echo BASE_URL; ?>/dashboard.php" class="nav-link">
+                        <a href="<?php echo BASE_URL; ?>/dashboard" class="nav-link">
                             <i class="fas fa-tachometer-alt"></i>
                             <span class="nav-text">Dashboard</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="<?php echo BASE_URL; ?>/members.php" class="nav-link">
+                        <a href="<?php echo BASE_URL; ?>/members" class="nav-link">
                             <i class="fas fa-users"></i>
                             <span class="nav-text">Membres</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="<?php echo BASE_URL; ?>/projects.php" class="nav-link">
+                        <a href="<?php echo BASE_URL; ?>/projects" class="nav-link">
                             <i class="fas fa-project-diagram"></i>
                             <span class="nav-text">Projets</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="<?php echo BASE_URL; ?>/events.php" class="nav-link">
+                        <a href="<?php echo BASE_URL; ?>/events" class="nav-link">
                             <i class="fas fa-calendar-alt"></i>
                             <span class="nav-text">Événements</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="<?php echo BASE_URL; ?>/donations.php" class="nav-link">
+                        <a href="<?php echo BASE_URL; ?>/donations" class="nav-link">
                             <i class="fas fa-hand-holding-heart"></i>
                             <span class="nav-text">Dons</span>
                         </a>
                     </li>
                     <?php if (isset($_SESSION['user']) && in_array($_SESSION['user']['role'], ['admin', 'moderator'])): ?>
                         <li class="nav-item">
-                            <a href="<?php echo BASE_URL; ?>/users.php" class="nav-link">
+                            <a href="<?php echo BASE_URL; ?>/users" class="nav-link">
                                 <i class="fas fa-user-shield"></i>
                                 <span class="nav-text">Utilisateurs</span>
                             </a>
@@ -84,7 +84,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="<?php echo BASE_URL; ?>/logout.php" class="text-danger">
+                                <a href="<?php echo BASE_URL; ?>/logout" class="text-danger">
                                     <i class="fas fa-sign-out-alt"></i>
                                     Déconnexion
                                 </a>
@@ -93,7 +93,7 @@
                     </li>
                 <?php else: ?>
                     <li class="nav-item">
-                        <a href="<?php echo BASE_URL; ?>/login.php" class="nav-link">
+                        <a href="<?php echo BASE_URL; ?>/login" class="nav-link">
                             <i class="fas fa-sign-in-alt"></i>
                             <span class="nav-text">Connexion</span>
                         </a>

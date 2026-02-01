@@ -3,8 +3,8 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1><?php echo htmlspecialchars($project['name']); ?></h1>
     <div>
-        <a href="<?php echo BASE_URL; ?>/projects.php?action=edit&id=<?php echo $project['id']; ?>" class="btn btn-warning">Modifier</a>
-        <a href="<?php echo BASE_URL; ?>/projects.php" class="btn btn-secondary">Retour à la liste</a>
+        <a href="<?php echo BASE_URL; ?>/projects?action=edit&id=<?php echo $project['id']; ?>" class="btn btn-warning">Modifier</a>
+        <a href="<?php echo BASE_URL; ?>/projects" class="btn btn-secondary">Retour à la liste</a>
     </div>
 </div>
 
@@ -112,9 +112,9 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <a href="<?php echo BASE_URL; ?>/projects.php?action=edit&id=<?php echo $project['id']; ?>" class="btn btn-warning">Modifier le projet</a>
-                    <a href="<?php echo BASE_URL; ?>/donations.php?project_id=<?php echo $project['id']; ?>" class="btn btn-success">Voir les dons</a>
-                    <a href="<?php echo BASE_URL; ?>/projects.php?action=delete&id=<?php echo $project['id']; ?>" class="btn btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est irréversible.">Supprimer le projet</a>
+                    <a href="<?php echo BASE_URL; ?>/projects?action=edit&id=<?php echo $project['id']; ?>" class="btn btn-warning">Modifier le projet</a>
+                    <a href="<?php echo BASE_URL; ?>/donations?project_id=<?php echo $project['id']; ?>" class="btn btn-success">Voir les dons</a>
+                    <a href="<?php echo BASE_URL; ?>/projects?action=delete&id=<?php echo $project['id']; ?>" class="btn btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est irréversible.">Supprimer le projet</a>
                 </div>
             </div>
         </div>

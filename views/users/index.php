@@ -2,7 +2,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Utilisateurs</h1>
-    <a href="<?php echo BASE_URL; ?>/users.php?action=create" class="btn btn-primary">Ajouter un utilisateur</a>
+    <a href="<?php echo BASE_URL; ?>/users?action=create" class="btn btn-primary">Ajouter un utilisateur</a>
 </div>
 
 <!-- Users Table -->
@@ -46,9 +46,9 @@
                                 </td>
                                 <td><?php echo date('d/m/Y', strtotime($user['created_at'])); ?></td>
                                 <td>
-                                    <a href="<?php echo BASE_URL; ?>/users.php?action=edit&id=<?php echo $user['id']; ?>" class="btn btn-sm btn-warning">Modifier</a>
+                                    <a href="<?php echo BASE_URL; ?>/users?action=edit&id=<?php echo $user['id']; ?>" class="btn btn-sm btn-warning">Modifier</a>
                                     <?php if ($user['id'] != $_SESSION['user']['id']): ?>
-                                        <a href="<?php echo BASE_URL; ?>/users.php?action=delete&id=<?php echo $user['id']; ?>" class="btn btn-sm btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer cet utilisateur ?">Supprimer</a>
+                                        <a href="<?php echo BASE_URL; ?>/users?action=delete&id=<?php echo $user['id']; ?>" class="btn btn-sm btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer cet utilisateur ?">Supprimer</a>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -59,7 +59,7 @@
         <?php else: ?>
             <div class="text-center py-5">
                 <p class="text-muted">Aucun utilisateur trouvé.</p>
-                <a href="<?php echo BASE_URL; ?>/users.php?action=create" class="btn btn-primary">Ajouter le premier utilisateur</a>
+                <a href="<?php echo BASE_URL; ?>/users?action=create" class="btn btn-primary">Ajouter le premier utilisateur</a>
             </div>
         <?php endif; ?>
     </div>

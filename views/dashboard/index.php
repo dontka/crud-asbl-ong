@@ -13,7 +13,7 @@
             <div class="card-body text-center">
                 <h3 class="card-title"><?php echo $stats['total_members'] ?? 0; ?></h3>
                 <p class="card-text">Membres actifs</p>
-                <a href="<?php echo BASE_URL; ?>/members.php" class="btn btn-primary btn-sm">Voir les membres</a>
+                <a href="<?php echo BASE_URL; ?>/members" class="btn btn-primary btn-sm">Voir les membres</a>
             </div>
         </div>
     </div>
@@ -23,7 +23,7 @@
             <div class="card-body text-center">
                 <h3 class="card-title"><?php echo $stats['total_projects'] ?? 0; ?></h3>
                 <p class="card-text">Projets actifs</p>
-                <a href="<?php echo BASE_URL; ?>/projects.php" class="btn btn-primary btn-sm">Voir les projets</a>
+                <a href="<?php echo BASE_URL; ?>/projects" class="btn btn-primary btn-sm">Voir les projets</a>
             </div>
         </div>
     </div>
@@ -33,7 +33,7 @@
             <div class="card-body text-center">
                 <h3 class="card-title"><?php echo $stats['total_events'] ?? 0; ?></h3>
                 <p class="card-text">Événements à venir</p>
-                <a href="<?php echo BASE_URL; ?>/events.php" class="btn btn-primary btn-sm">Voir les événements</a>
+                <a href="<?php echo BASE_URL; ?>/events" class="btn btn-primary btn-sm">Voir les événements</a>
             </div>
         </div>
     </div>
@@ -43,7 +43,7 @@
             <div class="card-body text-center">
                 <h3 class="card-title"><?php echo number_format($stats['total_donations'] ?? 0, 2, ',', ' '); ?> €</h3>
                 <p class="card-text">Total des dons</p>
-                <a href="<?php echo BASE_URL; ?>/donations.php" class="btn btn-primary btn-sm">Voir les dons</a>
+                <a href="<?php echo BASE_URL; ?>/donations" class="btn btn-primary btn-sm">Voir les dons</a>
             </div>
         </div>
     </div>

@@ -29,12 +29,19 @@ class DonationController extends Controller
             $conditions['project_id'] = $project_id;
         }
 
-        $donations = $this->donationModel->findAll($conditions, 'donation_date DESC');
+        $donations = $this->donationModel->getDonationsWithProjects($conditions, 'd.donation_date DESC');
+
+        // Calculate totals using model methods
+        $total_amount = $this->donationModel->getTotalAmount($conditions);
+        $total_donations = $this->donationModel->getTotalCount($conditions);
+
         $flash = $this->getFlash();
 
-        $this->render('donations/index', [
+        $this->renderContent('donations/index', [
             'donations' => $donations,
             'project_id' => $project_id,
+            'total_amount' => $total_amount,
+            'total_donations' => $total_donations,
             'flash' => $flash
         ]);
     }
@@ -47,8 +54,13 @@ class DonationController extends Controller
         $this->requireAuth();
         $flash = $this->getFlash();
 
-        $this->render('donations/create', [
-            'flash' => $flash
+        // Get all projects for project selection
+        $projectModel = new Project();
+        $projects = $projectModel->findAll([], 'name ASC');
+
+        $this->renderContent('donations/create', [
+            'flash' => $flash,
+            'projects' => $projects
         ]);
     }
 
@@ -75,7 +87,7 @@ class DonationController extends Controller
             $this->donationModel->save($donationData);
 
             $this->setFlash('success', 'Donation recorded successfully.');
-            $this->redirect('/donations.php');
+            $this->redirect('/donations');
         } catch (Exception $e) {
             $this->handleValidationError($e);
         }
@@ -90,18 +102,18 @@ class DonationController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/donations.php');
+            $this->redirect('/donations');
         }
 
         $donation = $this->donationModel->findById($id);
         if (!$donation) {
             $this->setFlash('error', 'Donation not found.');
-            $this->redirect('/donations.php');
+            $this->redirect('/donations');
         }
 
         $flash = $this->getFlash();
 
-        $this->render('donations/show', [
+        $this->renderContent('donations/show', [
             'donation' => $donation,
             'flash' => $flash
         ]);
@@ -116,20 +128,25 @@ class DonationController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/donations.php');
+            $this->redirect('/donations');
         }
 
         $donation = $this->donationModel->findById($id);
         if (!$donation) {
             $this->setFlash('error', 'Donation not found.');
-            $this->redirect('/donations.php');
+            $this->redirect('/donations');
         }
 
         $flash = $this->getFlash();
 
-        $this->render('donations/edit', [
+        // Get all projects for project selection
+        $projectModel = new Project();
+        $projects = $projectModel->findAll([], 'name ASC');
+
+        $this->renderContent('donations/edit', [
             'donation' => $donation,
-            'flash' => $flash
+            'flash' => $flash,
+            'projects' => $projects
         ]);
     }
 
@@ -143,7 +160,7 @@ class DonationController extends Controller
         $id = $data['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/donations.php');
+            $this->redirect('/donations');
         }
 
         try {
@@ -162,7 +179,7 @@ class DonationController extends Controller
             $this->donationModel->save($donationData);
 
             $this->setFlash('success', 'Donation updated successfully.');
-            $this->redirect('/donations.php');
+            $this->redirect('/donations');
         } catch (Exception $e) {
             $this->handleValidationError($e);
         }
@@ -177,7 +194,7 @@ class DonationController extends Controller
         $id = $this->getQueryData()['id'] ?? null;
 
         if (!$id) {
-            $this->redirect('/donations.php');
+            $this->redirect('/donations');
         }
 
         try {
@@ -187,6 +204,6 @@ class DonationController extends Controller
             $this->setFlash('error', 'Failed to delete donation: ' . $e->getMessage());
         }
 
-        $this->redirect('/donations.php');
+        $this->redirect('/donations');
     }
 }

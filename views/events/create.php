@@ -2,14 +2,15 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Ajouter un Événement</h1>
-    <a href="<?php echo BASE_URL; ?>/events.php" class="btn btn-secondary">Retour à la liste</a>
+    <a href="<?php echo BASE_URL; ?>/events" class="btn btn-secondary">Retour à la liste</a>
 </div>
 
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card">
             <div class="card-body">
-                <form action="<?php echo BASE_URL; ?>/events.php?action=store" method="post" data-validate>
+                <form action="/events" method="post" data-validate>
+                    <input type="hidden" name="action" value="store">
                     <div class="form-group">
                         <label for="title" class="form-label">Titre *</label>
                         <input type="text" class="form-control" id="title" name="title" required>
@@ -69,7 +70,7 @@
 
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">Créer l'événement</button>
-                        <a href="<?php echo BASE_URL; ?>/events.php" class="btn btn-secondary">Annuler</a>
+                        <a href="<?php echo BASE_URL; ?>/events" class="btn btn-secondary">Annuler</a>
                     </div>
                 </form>
             </div>

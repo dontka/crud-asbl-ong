@@ -2,7 +2,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Dons</h1>
-    <a href="<?php echo BASE_URL; ?>/donations.php?action=create" class="btn btn-primary">Ajouter un don</a>
+    <a href="<?php echo BASE_URL; ?>/donations?action=create" class="btn btn-primary">Ajouter un don</a>
 </div>
 
 <!-- Filters -->
@@ -26,11 +26,11 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label">&nbsp;</label>
-                <a href="<?php echo BASE_URL; ?>/donations.php" class="btn btn-outline-secondary w-100">Réinitialiser</a>
+                <a href="<?php echo BASE_URL; ?>/donations" class="btn btn-outline-secondary w-100">Réinitialiser</a>
             </div>
             <div class="col-md-2">
                 <label class="form-label">&nbsp;</label>
-                <a href="<?php echo BASE_URL; ?>/donations.php?action=export" class="btn btn-success w-100">Exporter CSV</a>
+                <a href="<?php echo BASE_URL; ?>/donations?action=export" class="btn btn-success w-100">Exporter CSV</a>
             </div>
         </form>
     </div>
@@ -102,9 +102,9 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="<?php echo BASE_URL; ?>/donations.php?action=show&id=<?php echo $donation['id']; ?>" class="btn btn-sm btn-info">Voir</a>
-                                    <a href="<?php echo BASE_URL; ?>/donations.php?action=edit&id=<?php echo $donation['id']; ?>" class="btn btn-sm btn-warning">Modifier</a>
-                                    <a href="<?php echo BASE_URL; ?>/donations.php?action=delete&id=<?php echo $donation['id']; ?>" class="btn btn-sm btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer ce don ?">Supprimer</a>
+                                    <a href="<?php echo BASE_URL; ?>/donations?action=show&id=<?php echo $donation['id']; ?>" class="btn btn-sm btn-info">Voir</a>
+                                    <a href="<?php echo BASE_URL; ?>/donations?action=edit&id=<?php echo $donation['id']; ?>" class="btn btn-sm btn-warning">Modifier</a>
+                                    <a href="<?php echo BASE_URL; ?>/donations?action=delete&id=<?php echo $donation['id']; ?>" class="btn btn-sm btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer ce don ?">Supprimer</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -114,7 +114,7 @@
         <?php else: ?>
             <div class="text-center py-5">
                 <p class="text-muted">Aucun don trouvé.</p>
-                <a href="<?php echo BASE_URL; ?>/donations.php?action=create" class="btn btn-primary">Ajouter le premier don</a>
+                <a href="<?php echo BASE_URL; ?>/donations?action=create" class="btn btn-primary">Ajouter le premier don</a>
             </div>
         <?php endif; ?>
     </div>

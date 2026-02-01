@@ -2,7 +2,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Mon Profil</h1>
-    <a href="<?php echo BASE_URL; ?>/dashboard.php" class="btn btn-secondary">Retour au dashboard</a>
+    <a href="<?php echo BASE_URL; ?>/dashboard" class="btn btn-secondary">Retour au dashboard</a>
 </div>
 
 <div class="row justify-content-center">
@@ -12,7 +12,7 @@
                 <h5>Informations du profil</h5>
             </div>
             <div class="card-body">
-                <form action="<?php echo BASE_URL; ?>/profile.php" method="post" data-validate>
+                <form action="/profile" method="post" data-validate>
                     <div class="form-group">
                         <label for="username" class="form-label">Nom d'utilisateur *</label>
                         <input type="text" class="form-control" id="username" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" required>

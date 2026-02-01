@@ -91,7 +91,7 @@ abstract class Controller
      */
     protected function redirect($url)
     {
-        header("Location: {$url}");
+        header("Location: " . BASE_URL . $url);
         exit;
     }
 
@@ -148,13 +148,50 @@ abstract class Controller
     }
 
     /**
+     * Render only the content without layout
+     * @param string $view
+     * @param array $data
+     */
+    protected function renderContent($view, $data = [])
+    {
+        // Extract data to variables
+        extract($data);
+
+        // Include the view
+        $viewPath = VIEWS_PATH . $view . '.php';
+        if (file_exists($viewPath)) {
+            include $viewPath;
+        } else {
+            echo "<p>View not found: {$view}</p>";
+        }
+    }
+
+    /**
      * Handle validation errors
      * @param Exception $e
      */
     protected function handleValidationError($e)
     {
         $this->setFlash('error', $e->getMessage());
-        $this->redirect($_SERVER['HTTP_REFERER'] ?? '/');
+
+        // For POST requests, redirect back to the form with errors
+        // For GET requests, redirect to a safe location
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Get the current route to determine where to redirect
+            $referer = $_SERVER['HTTP_REFERER'] ?? '';
+            if (!empty($referer) && strpos($referer, BASE_URL) === 0) {
+                $this->redirect($referer);
+            } else {
+                // Fallback: redirect to the index page of the current section
+                $currentUrl = $_SERVER['REQUEST_URI'] ?? '';
+                $path = parse_url($currentUrl, PHP_URL_PATH);
+                $segments = explode('/', trim($path, '/'));
+                $section = $segments[0] ?? 'dashboard';
+                $this->redirect('/' . $section);
+            }
+        } else {
+            $this->redirect('/');
+        }
     }
 
     /**
