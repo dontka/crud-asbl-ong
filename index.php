@@ -53,6 +53,9 @@ try {
         case 'donations':
             handleDonations();
             break;
+        case 'search':
+            handleSearch();
+            break;
         default:
             // Default to dashboard if authenticated, login if not
             if (isAuthenticated()) {
@@ -392,6 +395,24 @@ function handleDonations()
     }
     $content = ob_get_clean();
     includeLayout('donations/' . $action, $content);
+}
+
+/**
+ * Handle search functionality
+ */
+function handleSearch()
+{
+    if (!isAuthenticated()) {
+        redirect('/login');
+        return;
+    }
+
+    $pageTitle = 'Search Results';
+    $controller = new SearchController();
+    ob_start();
+    $controller->index();
+    $content = ob_get_clean();
+    includeLayout('search/index', $content);
 }
 
 /**

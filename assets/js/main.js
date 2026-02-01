@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initFormValidation();
     initConfirmations();
     initSearch();
+    initMobileMenu();
 });
 
 // Dropdown menus
@@ -146,6 +147,25 @@ function performSearch(input) {
         const text = row.textContent.toLowerCase();
         row.style.display = text.includes(query) ? '' : 'none';
     });
+}
+
+// Mobile menu
+function initMobileMenu() {
+    const toggler = document.querySelector('.navbar-toggler');
+    const nav = document.querySelector('.navbar-nav');
+
+    if (toggler && nav) {
+        toggler.addEventListener('click', function() {
+            nav.classList.toggle('show');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!toggler.contains(e.target) && !nav.contains(e.target)) {
+                nav.classList.remove('show');
+            }
+        });
+    }
 }
 
 // Utility functions

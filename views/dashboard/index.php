@@ -1,50 +1,40 @@
 <?php $pageTitle = 'Dashboard'; ?>
 
-<div class="row">
-    <div class="col-md-12">
-        <h1>Dashboard</h1>
-        <p class="text-muted">Bienvenue, <?php echo htmlspecialchars($user['username']); ?> !</p>
+<div class="hero-section fade-in-up">
+    <div class="container">
+        <h1>Tableau de Bord</h1>
+        <p>Bienvenue, <?php echo htmlspecialchars($user['username']); ?> ! Gérez votre ASBL-ONG avec créativité et efficacité.</p>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <h3 class="card-title"><?php echo $stats['total_members'] ?? 0; ?></h3>
-                <p class="card-text">Membres actifs</p>
-                <a href="<?php echo BASE_URL; ?>/members" class="btn btn-primary btn-sm">Voir les membres</a>
-            </div>
+<div class="container">
+    <div class="feature-grid">
+        <div class="feature-card">
+            <i class="fas fa-users"></i>
+            <h3><?php echo $stats['total_members'] ?? 0; ?></h3>
+            <p>Membres actifs</p>
+            <a href="<?php echo BASE_URL; ?>/members" class="btn btn-primary">Voir les membres</a>
         </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <h3 class="card-title"><?php echo $stats['total_projects'] ?? 0; ?></h3>
-                <p class="card-text">Projets actifs</p>
-                <a href="<?php echo BASE_URL; ?>/projects" class="btn btn-primary btn-sm">Voir les projets</a>
-            </div>
+        <div class="feature-card">
+            <i class="fas fa-project-diagram"></i>
+            <h3><?php echo $stats['total_projects'] ?? 0; ?></h3>
+            <p>Projets actifs</p>
+            <a href="<?php echo BASE_URL; ?>/projects" class="btn btn-primary">Voir les projets</a>
         </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <h3 class="card-title"><?php echo $stats['total_events'] ?? 0; ?></h3>
-                <p class="card-text">Événements à venir</p>
-                <a href="<?php echo BASE_URL; ?>/events" class="btn btn-primary btn-sm">Voir les événements</a>
-            </div>
+        <div class="feature-card">
+            <i class="fas fa-calendar-alt"></i>
+            <h3><?php echo $stats['total_events'] ?? 0; ?></h3>
+            <p>Événements à venir</p>
+            <a href="<?php echo BASE_URL; ?>/events" class="btn btn-primary">Voir les événements</a>
         </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <h3 class="card-title"><?php echo number_format($stats['total_donations'] ?? 0, 2, ',', ' '); ?> €</h3>
-                <p class="card-text">Total des dons</p>
-                <a href="<?php echo BASE_URL; ?>/donations" class="btn btn-primary btn-sm">Voir les dons</a>
-            </div>
+        <div class="feature-card">
+            <i class="fas fa-euro-sign"></i>
+            <h3><?php echo number_format($stats['total_donations'] ?? 0, 2, ',', ' '); ?> €</h3>
+            <p>Total des dons</p>
+            <a href="<?php echo BASE_URL; ?>/donations" class="btn btn-primary">Voir les dons</a>
         </div>
     </div>
 </div>

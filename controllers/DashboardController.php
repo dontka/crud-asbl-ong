@@ -48,9 +48,9 @@ class DashboardController extends Controller
             $stmt = $db->query("SELECT COUNT(*) as total FROM events WHERE status = 'active'");
             $stats['total_events'] = $stmt->fetch()['total'];
 
-            // Get total donations this month
-            $stmt = $db->query("SELECT SUM(amount) as total FROM donations WHERE MONTH(created_at) = MONTH(CURRENT_DATE()) AND YEAR(created_at) = YEAR(CURRENT_DATE())");
-            $stats['monthly_donations'] = $stmt->fetch()['total'] ?? 0;
+            // Get total donations
+            $stmt = $db->query("SELECT SUM(amount) as total FROM donations");
+            $stats['total_donations'] = $stmt->fetch()['total'] ?? 0;
 
             return $stats;
         } catch (Exception $e) {

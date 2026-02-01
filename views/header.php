@@ -20,9 +20,18 @@
         <nav class="navbar">
             <div class="navbar-brand">
                 <a href="<?php echo BASE_URL; ?>/dashboard">
-                    <i class="fas fa-heart"></i>
-                    <?php echo APP_NAME; ?>
+                    ASBL-ONG
                 </a>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="navbar-search">
+                <form action="<?php echo BASE_URL; ?>/search" method="GET" class="search-form">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" name="q" class="search-input" placeholder="Rechercher des membres, projets, événements..." autocomplete="off">
+                    </div>
+                </form>
             </div>
 
             <!-- Mobile menu toggle -->
@@ -35,46 +44,46 @@
                     <li class="nav-item">
                         <a href="<?php echo BASE_URL; ?>/dashboard" class="nav-link">
                             <i class="fas fa-tachometer-alt"></i>
-                            <span class="nav-text">Dashboard</span>
+                            Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="<?php echo BASE_URL; ?>/members" class="nav-link">
                             <i class="fas fa-users"></i>
-                            <span class="nav-text">Membres</span>
+                            Membres
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="<?php echo BASE_URL; ?>/projects" class="nav-link">
                             <i class="fas fa-project-diagram"></i>
-                            <span class="nav-text">Projets</span>
+                            Projets
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="<?php echo BASE_URL; ?>/events" class="nav-link">
                             <i class="fas fa-calendar-alt"></i>
-                            <span class="nav-text">Événements</span>
+                            Événements
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="<?php echo BASE_URL; ?>/donations" class="nav-link">
                             <i class="fas fa-hand-holding-heart"></i>
-                            <span class="nav-text">Dons</span>
+                            Dons
                         </a>
                     </li>
                     <?php if (isset($_SESSION['user']) && in_array($_SESSION['user']['role'], ['admin', 'moderator'])): ?>
                         <li class="nav-item">
                             <a href="<?php echo BASE_URL; ?>/users" class="nav-link">
                                 <i class="fas fa-user-shield"></i>
-                                <span class="nav-text">Utilisateurs</span>
+                                Utilisateurs
                             </a>
                         </li>
                     <?php endif; ?>
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle">
                             <i class="fas fa-user-circle"></i>
-                            <span class="nav-text"><?php echo htmlspecialchars($_SESSION['user']['username']); ?></span>
-                            <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            <?php echo htmlspecialchars($_SESSION['user']['username']); ?>
+                            <i class="fas fa-chevron-down"></i>
                         </a>
                         <ul class="dropdown-menu">
                             <li>
@@ -95,7 +104,7 @@
                     <li class="nav-item">
                         <a href="<?php echo BASE_URL; ?>/login" class="nav-link">
                             <i class="fas fa-sign-in-alt"></i>
-                            <span class="nav-text">Connexion</span>
+                            Connexion
                         </a>
                     </li>
                 <?php endif; ?>
