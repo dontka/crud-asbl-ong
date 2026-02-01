@@ -54,7 +54,7 @@ Le développement se fera en PHP pur (version 7.4 ou supérieure recommandée) e
 - **Durée** : 3 jours.
 - **Validation** : Tester les scripts dans MySQL Workbench ou phpMyAdmin.
 
-## Phase 3 : Configuration de l'Environnement et Structure de Base (Semaine 3)
+## Phase 3 : Configuration de l'Environnement et Structure de Base 
 
 ### Étape 3.1 : Mise en Place de l'Environnement Local
 - **Objectifs** : Préparer un environnement de développement stable.
