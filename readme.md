@@ -6,9 +6,11 @@ Ce plan de développement détaille la création d'un système CRUD (Create, Rea
 
 Le développement se fera en PHP pur (version 7.4 ou supérieure recommandée) et MySQL (version 5.7 ou supérieure), avec HTML5, CSS3 et JavaScript pour l'interface utilisateur. L'accent sera mis sur la sécurité, la maintenabilité et l'évolutivité. Le plan est structuré de manière progressive, où chaque étape s'appuie sur la précédente, permettant une évolution itérative et une validation continue.
 
-Durée estimée totale : 6-12 semaines selon la complexité et l'équipe (1-2 semaines par étape majeure).
 
-## Phase 1 : Préparation et Planification (Semaine 1)
+## NOTE IMPORTANT : Il ne faut pas créer des fichiers de documentation.
+
+
+## Phase 1 : Préparation et Planification
 
 ### Étape 1.1 : Analyse des Besoins et Collecte des Exigences
 - **Objectifs** : Comprendre les besoins spécifiques des ABNL/ONG et définir la portée du système.
@@ -18,7 +20,7 @@ Durée estimée totale : 6-12 semaines selon la complexité et l'équipe (1-2 se
   - Définir les rôles utilisateurs (admin, modérateur, visiteur).
   - Spécifier les fonctionnalités CRUD de base et avancées (recherche, filtres, rapports).
 - **Livrables** : Cahier des charges fonctionnel, liste des entités avec attributs.
-- **Durée** : 2-3 jours.
+ 
 
 ### Étape 1.2 : Conception Générale du Système
 - **Objectifs** : Établir l'architecture globale et les technologies.
@@ -28,7 +30,7 @@ Durée estimée totale : 6-12 semaines selon la complexité et l'équipe (1-2 se
   - Planifier la structure des dossiers (/config, /models, /controllers, /views, /assets).
   - Évaluer les risques et contraintes (compatibilité, sécurité).
 - **Livrables** : Diagramme d'architecture, document de conception générale.
-- **Durée** : 2-3 jours.
+ 
 
 ## Phase 2 : Conception de la Base de Données (Semaine 2)
 
