@@ -1,0 +1,187 @@
+<?php
+
+/**
+ * Base Controller Class
+ * Based on Phase 4: Backend Development - Step 4.3 Controllers and Business Logic
+ * Provides common functionality for all controllers
+ */
+
+abstract class Controller
+{
+    protected $model;
+
+    public function __construct()
+    {
+        $this->startSession();
+    }
+
+    /**
+     * Start session if not already started
+     */
+    protected function startSession()
+    {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+    }
+
+    /**
+     * Check if user is authenticated
+     * @return bool
+     */
+    protected function isAuthenticated()
+    {
+        return isset($_SESSION['user_id']);
+    }
+
+    /**
+     * Get current user data
+     * @return array|null
+     */
+    protected function getCurrentUser()
+    {
+        if ($this->isAuthenticated()) {
+            return $_SESSION['user'] ?? null;
+        }
+        return null;
+    }
+
+    /**
+     * Check if current user has required role
+     * @param string|array $roles
+     * @return bool
+     */
+    protected function hasRole($roles)
+    {
+        $user = $this->getCurrentUser();
+        if (!$user) return false;
+
+        if (is_array($roles)) {
+            return in_array($user['role'], $roles);
+        }
+        return $user['role'] === $roles;
+    }
+
+    /**
+     * Require authentication
+     */
+    protected function requireAuth()
+    {
+        if (!$this->isAuthenticated()) {
+            $this->redirect('/login.php');
+        }
+    }
+
+    /**
+     * Require specific role
+     * @param string|array $roles
+     */
+    protected function requireRole($roles)
+    {
+        $this->requireAuth();
+        if (!$this->hasRole($roles)) {
+            $this->setFlash('error', 'Access denied. Insufficient permissions.');
+            $this->redirect('/dashboard.php');
+        }
+    }
+
+    /**
+     * Redirect to URL
+     * @param string $url
+     */
+    protected function redirect($url)
+    {
+        header("Location: {$url}");
+        exit;
+    }
+
+    /**
+     * Set flash message
+     * @param string $type
+     * @param string $message
+     */
+    protected function setFlash($type, $message)
+    {
+        $_SESSION['flash'] = [
+            'type' => $type,
+            'message' => $message
+        ];
+    }
+
+    /**
+     * Get and clear flash message
+     * @return array|null
+     */
+    protected function getFlash()
+    {
+        if (isset($_SESSION['flash'])) {
+            $flash = $_SESSION['flash'];
+            unset($_SESSION['flash']);
+            return $flash;
+        }
+        return null;
+    }
+
+    /**
+     * Render a view
+     * @param string $view
+     * @param array $data
+     */
+    protected function render($view, $data = [])
+    {
+        // Extract data to variables
+        extract($data);
+
+        // Include header
+        include VIEWS_PATH . 'header.php';
+
+        // Include the view
+        $viewPath = VIEWS_PATH . $view . '.php';
+        if (file_exists($viewPath)) {
+            include $viewPath;
+        } else {
+            echo "<p>View not found: {$view}</p>";
+        }
+
+        // Include footer
+        include VIEWS_PATH . 'footer.php';
+    }
+
+    /**
+     * Handle validation errors
+     * @param Exception $e
+     */
+    protected function handleValidationError($e)
+    {
+        $this->setFlash('error', $e->getMessage());
+        $this->redirect($_SERVER['HTTP_REFERER'] ?? '/');
+    }
+
+    /**
+     * Get POST data
+     * @return array
+     */
+    protected function getPostData()
+    {
+        return $_POST;
+    }
+
+    /**
+     * Get GET data
+     * @return array
+     */
+    protected function getQueryData()
+    {
+        return $_GET;
+    }
+
+    /**
+     * Sanitize input
+     * @param string $data
+     * @return string
+     */
+    protected function sanitize($data)
+    {
+        return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
+    }
+}
