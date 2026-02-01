@@ -22,118 +22,119 @@ class User extends Model
         }
 
         if (empty($data['email']) || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            throw new Exception("Invalid email address");
+            throw new Exception("Invalid email format");
         }
 
-        if (!isset($data['role']) || !in_array($data['role'], ['admin', 'moderator', 'visitor'])) {
-            $data['role'] = 'visitor'; // Default role
+        if (empty($data['password'])) {
+            throw new Exception("Password is required");
         }
 
-        // Check for duplicate username
-        if ($this->isUsernameTaken($data['username'], $data['id'] ?? null)) {
-            throw new Exception("Username already taken");
-        }
-
-        // Check for duplicate email
-        if ($this->isEmailTaken($data['email'], $data['id'] ?? null)) {
-            throw new Exception("Email already taken");
+        if (!$this->validatePassword($data['password'])) {
+            throw new Exception("Password must be at least 8 characters with uppercase, lowercase, and number");
         }
 
         return true;
     }
 
     /**
+     * Validate password strength
+     * @param string $password
+     * @return bool
+     */
+    public function validatePassword($password)
+    {
+        // Minimum 8 characters, at least one uppercase, one lowercase, one number
+        if (strlen($password) < 8) {
+            return false;
+        }
+
+        if (!preg_match("/[A-Z]/", $password)) {
+            return false;
+        }
+
+        if (!preg_match("/[a-z]/", $password)) {
+            return false;
+        }
+
+        if (!preg_match("/[0-9]/", $password)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Hash password securely
+     * @param string $password
+     * @return string
+     */
+    public function hashPassword($password)
+    {
+        return password_hash($password, PASSWORD_ARGON2ID, [
+            'memory_cost' => 65536,
+            'time_cost' => 4,
+            'threads' => 3
+        ]);
+    }
+
+    /**
+     * Verify password
+     * @param string $password
+     * @param string $hash
+     * @return bool
+     */
+    public function verifyPassword($password, $hash)
+    {
+        return password_verify($password, $hash);
+    }
+
+    /**
      * Authenticate user
      * @param string $username
      * @param string $password
-     * @return array|null User data if authenticated
+     * @return array|null
      */
     public function authenticate($username, $password)
     {
-        try {
-            $sql = "SELECT * FROM {$this->table} WHERE username = ?";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([$username]);
-            $user = $stmt->fetch();
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
+        $stmt->execute([$username, $username]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($user && password_verify($password, $user['password'])) {
-                unset($user['password']); // Don't return password
-                return $user;
-            }
-
-            return null;
-        } catch (PDOException $e) {
-            $this->logError("Authentication failed: " . $e->getMessage());
-            throw new Exception("Authentication error");
+        if ($user && $this->verifyPassword($password, $user['password'])) {
+            return $user;
         }
+
+        return null;
     }
 
     /**
-     * Save user (hash password if provided)
+     * Create new user with secure password
      * @param array $data
-     * @return mixed
+     * @return int
      */
-    public function save($data)
+    public function create($data)
     {
-        // Hash password if provided
-        if (isset($data['password']) && !empty($data['password'])) {
-            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-        } elseif (!isset($data[$this->primaryKey])) {
-            throw new Exception("Password is required for new users");
-        }
+        $this->validate($data);
 
-        return parent::save($data);
+        $data['password'] = $this->hashPassword($data['password']);
+        $data['created_at'] = date('Y-m-d H:i:s');
+
+        return parent::create($data);
     }
 
     /**
-     * Check if username is taken
-     * @param string $username
-     * @param int|null $excludeId
+     * Update user
+     * @param int $id
+     * @param array $data
      * @return bool
      */
-    private function isUsernameTaken($username, $excludeId = null)
+    public function update($id, $data)
     {
-        $sql = "SELECT COUNT(*) FROM {$this->table} WHERE username = ?";
-        $params = [$username];
-
-        if ($excludeId) {
-            $sql .= " AND id != ?";
-            $params[] = $excludeId;
+        if (isset($data['password'])) {
+            $this->validatePassword($data['password']);
+            $data['password'] = $this->hashPassword($data['password']);
         }
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchColumn() > 0;
-    }
-
-    /**
-     * Check if email is taken
-     * @param string $email
-     * @param int|null $excludeId
-     * @return bool
-     */
-    private function isEmailTaken($email, $excludeId = null)
-    {
-        $sql = "SELECT COUNT(*) FROM {$this->table} WHERE email = ?";
-        $params = [$email];
-
-        if ($excludeId) {
-            $sql .= " AND id != ?";
-            $params[] = $excludeId;
-        }
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchColumn() > 0;
-    }
-
-    /**
-     * Get users by role
-     * @param string $role
-     * @return array
-     */
-    public function getByRole($role)
-    {
-        return $this->findBy('role', $role, 'username ASC');
+        return parent::update($id, $data);
     }
 }

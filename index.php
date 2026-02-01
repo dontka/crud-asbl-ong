@@ -8,6 +8,12 @@
 // Include configuration and autoloader
 require_once 'config.php';
 require_once 'autoloader.php';
+require_once 'includes/security_headers.php';
+
+
+require_once 'includes/security_headers.php';
+
+
 
 try {
     // Initialize database connection
@@ -52,6 +58,9 @@ try {
             break;
         case 'donations':
             handleDonations();
+            break;
+        case 'documentation':
+            handleDocumentation();
             break;
         case 'search':
             handleSearch();
@@ -150,6 +159,42 @@ function handleDashboard()
     $controller->index();
     $content = ob_get_clean();
     includeLayout('dashboard/index', $content);
+}
+
+/**
+ * Handle documentation
+ */
+function handleDocumentation()
+{
+    if (!isAuthenticated()) {
+        redirect('/login');
+        return;
+    }
+
+    $pageTitle = 'Documentation';
+    $controller = new DocumentationController();
+
+    $action = $_GET['action'] ?? 'index';
+    ob_start();
+    switch ($action) {
+        case 'userGuide':
+            $controller->userGuide();
+            break;
+        case 'technicalDoc':
+            $controller->technicalDoc();
+            break;
+        case 'maintenance':
+            $controller->maintenance();
+            break;
+        case 'api':
+            $controller->api();
+            break;
+        default:
+            $controller->index();
+            break;
+    }
+    $content = ob_get_clean();
+    includeLayout('documentation/' . ($action === 'index' ? 'index' : $action), $content);
 }
 
 /**

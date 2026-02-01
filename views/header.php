@@ -71,6 +71,12 @@
                             Dons
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="<?php echo BASE_URL; ?>/documentation" class="nav-link">
+                            <i class="fas fa-book"></i>
+                            Documentation
+                        </a>
+                    </li>
                     <?php if (isset($_SESSION['user']) && in_array($_SESSION['user']['role'], ['admin', 'moderator'])): ?>
                         <li class="nav-item">
                             <a href="<?php echo BASE_URL; ?>/users" class="nav-link">
