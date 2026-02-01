@@ -756,15 +756,15 @@ php tests/security_test.php
 ### 💬 Questions
 
 - **Forum** : [GitHub Discussions](https://github.com/your-org/crud-asbl-ong/discussions)
-- **Email** : support@crud-asbl-ong.local
+- **Email** : schor@alwaysdata.net
 - **Chat** : Discord/Slack (lien à venir)
 
 ### 🚨 Urgences
 
 Pour les problèmes critiques :
-- **Sécurité** : security@crud-asbl-ong.local
-- **Disponibilité** : uptime@crud-asbl-ong.local
-- **Téléphone** : +32 2 XXX XX XX (heures ouvrables)
+- **Sécurité** : schor@alwaysdata.net
+- **Disponibilité** : schor.alwaysdata.net
+- **Téléphone** : +243 973 768 153 (heures ouvrables)
 
 ---
 
