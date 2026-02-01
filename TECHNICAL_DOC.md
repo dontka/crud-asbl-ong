@@ -4,6 +4,7 @@
 
 ### Vue d'ensemble
 
+
 Le système CRUD ASBL-ONG est développé en PHP pur (sans framework) avec une architecture MVC-like (Modèle-Vue-Contrôleur) pour assurer la séparation des préoccupations et la maintenabilité.
 
 ### Structure des dossiers

@@ -3,7 +3,7 @@
 [![PHP Version](https://img.shields.io/badge/PHP-8.3+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
 [![MySQL Version](https://img.shields.io/badge/MySQL-8.0+-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://mysql.com)
 [![License](https://img.shields.io/badge/License-MIT-98C511?style=for-the-badge)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.0-FF6B35?style=for-the-badge)](https://github.com/your-org/crud-asbl-ong)
+[![Version](https://img.shields.io/badge/Version-1.0-FF6B35?style=for-the-badge)](https://github.com/dontka/crud-asbl-ong)
 
 > **Un système de gestion complet et sécurisé pour associations à but non lucratif (ASBL) et organisations non gouvernementales (ONG)**
 
@@ -125,7 +125,7 @@ CRUD ASBL-ONG est une plateforme web complète développée en **PHP pur** (sans
 
 ```bash
 # 1. Cloner le repository
-git clone https://github.com/your-org/crud-asbl-ong.git
+git clone https://github.com/dontka/crud-asbl-ong.git
 cd crud-asbl-ong
 
 # 2. Installer les dépendances (si applicable)
@@ -152,7 +152,7 @@ php tests/validate_environment.php
 
 ```bash
 # Télécharger et extraire l'archive
-wget https://github.com/your-org/crud-asbl-ong/archive/main.zip
+wget https://github.com/dontka/crud-asbl-ong/archive/main.zip
 unzip main.zip
 cd crud-asbl-ong-main
 
@@ -755,16 +755,16 @@ php tests/security_test.php
 
 ### 💬 Questions
 
-- **Forum** : [GitHub Discussions](https://github.com/your-org/crud-asbl-ong/discussions)
-- **Email** : support@crud-asbl-ong.local
+- **Forum** : [GitHub Discussions](https://github.com/dontka/crud-asbl-ong/discussions)
+- **Email** : schor@alwaysdata.net
 - **Chat** : Discord/Slack (lien à venir)
 
 ### 🚨 Urgences
 
 Pour les problèmes critiques :
-- **Sécurité** : security@crud-asbl-ong.local
-- **Disponibilité** : uptime@crud-asbl-ong.local
-- **Téléphone** : +32 2 XXX XX XX (heures ouvrables)
+- **Sécurité** : schor@alwaysdata.net
+- **Disponibilité** : schor@alwaysdata.net
+- **Téléphone** : +243 973 768 153 (heures ouvrables)
 
 ---
 
@@ -844,9 +844,9 @@ SOFTWARE.
 
 ---
 
-[![GitHub stars](https://img.shields.io/github/stars/your-org/crud-asbl-ong?style=social)](https://github.com/your-org/crud-asbl-ong/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/your-org/crud-asbl-ong?style=social)](https://github.com/your-org/crud-asbl-ong/network/members)
-[![GitHub issues](https://img.shields.io/github/issues/your-org/crud-asbl-ong?style=social)](https://github.com/your-org/crud-asbl-ong/issues)
+[![GitHub stars](https://img.shields.io/github/stars/dontka/crud-asbl-ong?style=social)](https://github.com/dontka/crud-asbl-ong/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/dontka/crud-asbl-ong?style=social)](https://github.com/dontka/crud-asbl-ong/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/dontka/crud-asbl-ong?style=social)](https://github.com/dontka/crud-asbl-ong/issues)
 
 **⭐ Si ce projet vous aide, n'hésitez pas à lui donner une étoile !**
 
