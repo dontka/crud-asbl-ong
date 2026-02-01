@@ -6,19 +6,10 @@
  */
 
 try {
-    // Initialize database connection
+    // Connexion simple à la base de données (suppose que la base est déjà installée)
     $db = Database::getInstance();
     $pdo = $db->getConnection();
-
-    // Check if database setup is needed
-    if (!$db->databaseExists(DB_NAME)) {
-        $db->createDatabase(DB_NAME);
-        $db->selectDatabase(DB_NAME);
-        $db->executeSqlFile(DATABASE_PATH . 'schema.sql');
-        $db->executeSqlFile(DATABASE_PATH . 'test_data.sql');
-    } else {
-        $db->selectDatabase(DB_NAME);
-    }
+    $db->selectDatabase(DB_NAME);
 
     // Get the current route
     $route = getRoute();
@@ -26,7 +17,11 @@ try {
     // Handle routing
     switch ($route) {
         case 'login':
-            handleLogin();
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                handleLoginAuthenticate();
+            } else {
+                handleLogin();
+            }
             break;
         case 'logout':
             handleLogout();
@@ -119,61 +114,78 @@ function displayError($message)
 }
 
 // --- Handler Functions for Routing ---
-function handleDashboard() {
+function handleDashboard()
+{
     require_once __DIR__ . '/../controllers/DashboardController.php';
     $controller = new DashboardController();
     $controller->index();
 }
 
-function handleLogin() {
+function handleLogin()
+{
     require_once __DIR__ . '/../controllers/UserController.php';
     $controller = new UserController();
     $controller->login();
 }
 
-function handleLogout() {
+function handleLoginAuthenticate()
+{
+    require_once __DIR__ . '/../controllers/UserController.php';
+    $controller = new UserController();
+    $controller->authenticate();
+}
+
+function handleLogout()
+{
     require_once __DIR__ . '/../controllers/UserController.php';
     $controller = new UserController();
     $controller->logout();
 }
 
-function handleUsers() {
+function handleUsers()
+{
     require_once __DIR__ . '/../controllers/UserController.php';
     $controller = new UserController();
     $controller->index();
 }
 
-function handleMembers() {
+function handleMembers()
+{
     require_once __DIR__ . '/../controllers/MemberController.php';
     $controller = new MemberController();
     $controller->index();
 }
 
-function handleProjects() {
+function handleProjects()
+{
     require_once __DIR__ . '/../controllers/ProjectController.php';
     $controller = new ProjectController();
     $controller->index();
 }
 
-function handleEvents() {
+function handleEvents()
+{
     require_once __DIR__ . '/../controllers/EventController.php';
     $controller = new EventController();
     $controller->index();
 }
 
-function handleDonations() {
+function handleDonations()
+{
     require_once __DIR__ . '/../controllers/DonationController.php';
     $controller = new DonationController();
     $controller->index();
 }
 
-function handleDocumentation() {
+function handleDocumentation()
+{
     require_once __DIR__ . '/../controllers/DocumentationController.php';
     $controller = new DocumentationController();
     $controller->index();
 }
 
-function handleSearch() {
+function handleSearch()
+{
     require_once __DIR__ . '/../controllers/SearchController.php';
     $controller = new SearchController();
     $controller->index();
