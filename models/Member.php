@@ -69,25 +69,6 @@ class Member extends Model
     }
 
     /**
-     * Search members by name or email
-     * @param string $query
-     * @return array
-     */
-    public function search($query)
-    {
-        try {
-            $sql = "SELECT * FROM {$this->table} WHERE first_name LIKE ? OR last_name LIKE ? OR email LIKE ?";
-            $searchTerm = "%{$query}%";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([$searchTerm, $searchTerm, $searchTerm]);
-            return $stmt->fetchAll();
-        } catch (PDOException $e) {
-            $this->logError("Search failed: " . $e->getMessage());
-            throw new Exception("Database error: Unable to search members");
-        }
-    }
-
-    /**
      * Check if email is taken
      * @param string $email
      * @param int|null $excludeId

@@ -2,7 +2,12 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Membres</h1>
-    <a href="<?php echo BASE_URL; ?>/members?action=create" class="btn btn-primary">Ajouter un membre</a>
+    <div>
+        <a href="<?php echo BASE_URL; ?>/members?action=export<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?><?php echo !empty($status) ? '&status=' . urlencode($status) : ''; ?>" class="btn btn-success me-2">
+            <i class="fas fa-download"></i> Exporter CSV
+        </a>
+        <a href="<?php echo BASE_URL; ?>/members?action=create" class="btn btn-primary">Ajouter un membre</a>
+    </div>
 </div>
 
 <!-- Filters -->

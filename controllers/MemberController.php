@@ -31,7 +31,12 @@ class MemberController extends Controller
             $conditions['status'] = $status;
         }
 
-        $members = $this->memberModel->findAll($conditions, 'last_name ASC, first_name ASC');
+        if (!empty($search)) {
+            $members = $this->memberModel->search($search, ['first_name', 'last_name', 'email'], $conditions, 'last_name ASC, first_name ASC');
+        } else {
+            $members = $this->memberModel->findAll($conditions, 'last_name ASC, first_name ASC');
+        }
+
         $flash = $this->getFlash();
 
         $this->renderContent('members/index', [
@@ -213,5 +218,56 @@ class MemberController extends Controller
             'query' => $query,
             'flash' => $flash
         ]);
+    }
+
+    /**
+     * Export members to CSV
+     */
+    public function export()
+    {
+        $this->requireAuth();
+
+        $search = $this->getQueryData()['search'] ?? '';
+        $status = $this->getQueryData()['status'] ?? '';
+
+        $conditions = [];
+        if (!empty($status)) {
+            $conditions['status'] = $status;
+        }
+
+        if (!empty($search)) {
+            $members = $this->memberModel->search($search, ['first_name', 'last_name', 'email'], $conditions, 'last_name ASC, first_name ASC');
+        } else {
+            $members = $this->memberModel->findAll($conditions, 'last_name ASC, first_name ASC');
+        }
+
+        // Set headers for CSV download
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=members_' . date('Y-m-d') . '.csv');
+
+        // Create output stream
+        $output = fopen('php://output', 'w');
+
+        // Add BOM for UTF-8
+        fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+        // CSV headers
+        fputcsv($output, ['ID', 'First Name', 'Last Name', 'Email', 'Phone', 'Join Date', 'Status']);
+
+        // CSV data
+        foreach ($members as $member) {
+            fputcsv($output, [
+                $member['id'],
+                $member['first_name'],
+                $member['last_name'],
+                $member['email'],
+                $member['phone'] ?? '',
+                $member['join_date'],
+                $member['status']
+            ]);
+        }
+
+        fclose($output);
+        exit;
     }
 }

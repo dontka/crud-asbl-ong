@@ -66,7 +66,6 @@ class SearchController extends Controller
             $stmt = $db->prepare("SELECT d.id, d.amount, d.created_at, m.first_name, m.last_name FROM donations d JOIN members m ON d.member_id = m.id WHERE (m.first_name LIKE ? OR m.last_name LIKE ?) LIMIT 10");
             $stmt->execute([$searchTerm, $searchTerm]);
             $results['donations'] = $stmt->fetchAll();
-
         } catch (Exception $e) {
             error_log("Error performing search: " . $e->getMessage());
         }

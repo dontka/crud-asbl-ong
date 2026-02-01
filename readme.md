@@ -150,7 +150,7 @@ Le développement se fera en PHP pur (version 7.4 ou supérieure recommandée) e
 - **Livrables** : Dashboard et pages avancées.
 - **Durée** : 2 jours.
 
-## Phase 6 : Tests, Sécurité et Optimisation (Semaine 8)
+## Phase 6 : Tests, Sécurité et Optimisation
 
 ### Étape 6.1 : Tests Intégrés
 - **Objectifs** : Valider le système complet.

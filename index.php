@@ -242,6 +242,9 @@ function handleMembers()
         case 'show':
             $controller->show();
             break;
+        case 'export':
+            $controller->export();
+            break;
         default:
             $controller->index();
             break;

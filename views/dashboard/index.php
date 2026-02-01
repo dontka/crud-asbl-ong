@@ -26,7 +26,7 @@
         <div class="feature-card">
             <i class="fas fa-calendar-alt"></i>
             <h3><?php echo $stats['total_events'] ?? 0; ?></h3>
-            <p>Événements à venir</p>
+            <p>Événements totaux</p>
             <a href="<?php echo BASE_URL; ?>/events" class="btn btn-primary">Voir les événements</a>
         </div>
 
@@ -34,6 +34,20 @@
             <i class="fas fa-euro-sign"></i>
             <h3><?php echo number_format($stats['total_donations'] ?? 0, 2, ',', ' '); ?> €</h3>
             <p>Total des dons</p>
+            <a href="<?php echo BASE_URL; ?>/donations" class="btn btn-primary">Voir les dons</a>
+        </div>
+
+        <div class="feature-card">
+            <i class="fas fa-calendar-check"></i>
+            <h3><?php echo $stats['upcoming_events'] ?? 0; ?></h3>
+            <p>Événements à venir (30j)</p>
+            <a href="<?php echo BASE_URL; ?>/events" class="btn btn-primary">Voir les événements</a>
+        </div>
+
+        <div class="feature-card">
+            <i class="fas fa-hand-holding-heart"></i>
+            <h3><?php echo $stats['recent_donations_count'] ?? 0; ?></h3>
+            <p>Dons récents (30j)</p>
             <a href="<?php echo BASE_URL; ?>/donations" class="btn btn-primary">Voir les dons</a>
         </div>
     </div>
