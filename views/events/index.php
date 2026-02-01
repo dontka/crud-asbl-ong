@@ -56,16 +56,16 @@
                                 <td><?php echo $event['max_participants'] ?? '-'; ?></td>
                                 <td>
                                     <span class="badge bg-<?php
-                                        echo match($event['status']) {
-                                            'planned' => 'secondary',
-                                            'ongoing' => 'success',
-                                            'completed' => 'info',
-                                            'cancelled' => 'danger',
-                                            default => 'secondary'
-                                        };
-                                    ?>">
+                                                            echo match ($event['status']) {
+                                                                'planned' => 'secondary',
+                                                                'ongoing' => 'success',
+                                                                'completed' => 'info',
+                                                                'cancelled' => 'danger',
+                                                                default => 'secondary'
+                                                            };
+                                                            ?>">
                                         <?php
-                                        echo match($event['status']) {
+                                        echo match ($event['status']) {
                                             'planned' => 'Planifié',
                                             'ongoing' => 'En cours',
                                             'completed' => 'Terminé',

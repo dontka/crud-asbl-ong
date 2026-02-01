@@ -58,16 +58,16 @@
                                 <td><?php echo $project['budget'] ? number_format($project['budget'], 2, ',', ' ') . ' €' : '-'; ?></td>
                                 <td>
                                     <span class="badge bg-<?php
-                                        echo match($project['status']) {
-                                            'planning' => 'secondary',
-                                            'active' => 'success',
-                                            'completed' => 'info',
-                                            'on_hold' => 'warning',
-                                            default => 'secondary'
-                                        };
-                                    ?>">
+                                                            echo match ($project['status']) {
+                                                                'planning' => 'secondary',
+                                                                'active' => 'success',
+                                                                'completed' => 'info',
+                                                                'on_hold' => 'warning',
+                                                                default => 'secondary'
+                                                            };
+                                                            ?>">
                                         <?php
-                                        echo match($project['status']) {
+                                        echo match ($project['status']) {
                                             'planning' => 'Planification',
                                             'active' => 'Actif',
                                             'completed' => 'Terminé',

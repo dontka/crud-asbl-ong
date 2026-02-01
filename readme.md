@@ -120,7 +120,7 @@ Le développement se fera en PHP pur (version 7.4 ou supérieure recommandée) e
 - **Durée** : 3 jours.
 - **Validation** : Tester via des requêtes HTTP simulées.
 
-## Phase 5 : Développement du Frontend
+## Phase 6 : Tests, Sécurité et Optimisation
 
 ### Étape 5.1 : Templates et Vues de Base
 - **Objectifs** : Créer des vues réutilisables.

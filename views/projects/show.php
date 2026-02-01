@@ -34,16 +34,16 @@
                     <dt class="col-sm-3">Statut</dt>
                     <dd class="col-sm-9">
                         <span class="badge bg-<?php
-                            echo match($project['status']) {
-                                'planning' => 'secondary',
-                                'active' => 'success',
-                                'completed' => 'info',
-                                'on_hold' => 'warning',
-                                default => 'secondary'
-                            };
-                        ?>">
+                                                echo match ($project['status']) {
+                                                    'planning' => 'secondary',
+                                                    'active' => 'success',
+                                                    'completed' => 'info',
+                                                    'on_hold' => 'warning',
+                                                    default => 'secondary'
+                                                };
+                                                ?>">
                             <?php
-                            echo match($project['status']) {
+                            echo match ($project['status']) {
                                 'planning' => 'Planification',
                                 'active' => 'Actif',
                                 'completed' => 'Terminé',
@@ -68,40 +68,40 @@
 
         <!-- Donations liées au projet -->
         <?php if (!empty($project_donations)): ?>
-        <div class="card mt-4">
-            <div class="card-header">
-                <h5>Dons reçus pour ce projet</h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Donateur</th>
-                                <th>Montant</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($project_donations as $donation): ?>
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Dons reçus pour ce projet</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($donation['donor_name']); ?></td>
-                                    <td><?php echo number_format($donation['amount'], 2, ',', ' '); ?> €</td>
-                                    <td><?php echo date('d/m/Y', strtotime($donation['donation_date'])); ?></td>
+                                    <th>Donateur</th>
+                                    <th>Montant</th>
+                                    <th>Date</th>
                                 </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>Total</th>
-                                <th><?php echo number_format(array_sum(array_column($project_donations, 'amount')), 2, ',', ' '); ?> €</th>
-                                <th></th>
-                            </tr>
-                        </tfoot>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($project_donations as $donation): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($donation['donor_name']); ?></td>
+                                        <td><?php echo number_format($donation['amount'], 2, ',', ' '); ?> €</td>
+                                        <td><?php echo date('d/m/Y', strtotime($donation['donation_date'])); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Total</th>
+                                    <th><?php echo number_format(array_sum(array_column($project_donations, 'amount')), 2, ',', ' '); ?> €</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
         <?php endif; ?>
     </div>
 
