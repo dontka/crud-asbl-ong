@@ -47,13 +47,17 @@
                 <button class="nav-btn refresh-btn" onclick="refreshDashboard()">
                     <i class="fas fa-sync-alt"></i> Actualiser
                 </button>
-                <div class="time-range-selector">
-                    <select id="timeRange" onchange="changeTimeRange(this.value)">
+                <div class=" time-range-selector" style=" ">
+
+                    <select id="timeRange" class="" onchange="changeTimeRange(this.value)">
+
                         <option value="7d">7 jours</option>
                         <option value="30d" selected>30 jours</option>
                         <option value="90d">90 jours</option>
                         <option value="1y">1 an</option>
+
                     </select>
+
                 </div>
             </div>
             <!--   -->
