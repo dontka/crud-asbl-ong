@@ -1,35 +1,44 @@
 <?php $pageTitle = 'Dashboard Complet - ASBL-ONG'; ?>
 <?php include VIEWS_PATH . 'header.php'; ?>
-
-<!-- Inclure les bibliothèques nécessaires -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<!--
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <h3>Chargement du dashboard...</h3>
+        <p>Préparation de vos données</p>
+    </div>
+</div>-->
 
 <div class="complete-dashboard">
-    <!-- Top Navigation Bar -->
-    <div class="dashboard-nav">
-        <div class="nav-left">
-            <h1><i class="fas fa-tachometer-alt"></i> Dashboard Complet</h1>
-            <span class="nav-date"><?php echo date('l, F j, Y'); ?></span>
-        </div>
-        <div class="nav-right">
-            <div class="nav-actions">
-                <button class="nav-btn refresh-btn" onclick="refreshDashboard()">
-                    <i class="fas fa-sync-alt"></i> Actualiser
-                </button>
-                <div class="time-range-selector">
-                    <select id="timeRange" onchange="changeTimeRange(this.value)">
-                        <option value="7d">7 jours</option>
-                        <option value="30d" selected>30 jours</option>
-                        <option value="90d">90 jours</option>
-                        <option value="1y">1 an</option>
-                    </select>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-container">
+            <h1><i class="fas fa-tachometer-alt"></i> Dashboard ASBL-ONG</h1>
+            <p>Plateforme de gestion complète pour votre association</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span><?php echo $stats['total_members'] ?? 0; ?></span>
+                    <span>Membres</span>
+                </div>
+                <div class="hero-stat">
+                    <span><?php echo $stats['total_projects'] ?? 0; ?></span>
+                    <span>Projets</span>
+                </div>
+                <div class="hero-stat">
+                    <span><?php echo $stats['total_events'] ?? 0; ?></span>
+                    <span>Événements</span>
+                </div>
+                <div class="hero-stat">
+                    <span><?php echo number_format($stats['total_donations'] ?? 0, 0, ',', ' '); ?>€</span>
+                    <span>Dons</span>
                 </div>
             </div>
+
         </div>
+
     </div>
+
+
 
     <!-- KPIs Section Complète -->
     <div class="kpis-section">
@@ -206,89 +215,204 @@
 
     <!-- Main Content Area -->
     <div class="main-content">
-        <!-- Charts Section -->
-        <div class="charts-section">
-            <div class="chart-row">
-                <div class="chart-card large">
-                    <div class="chart-header">
-                        <h3><i class="fas fa-chart-line"></i> Évolution Financière</h3>
-                        <div class="chart-controls">
-                            <button class="chart-filter active" data-type="donations">Dons</button>
-                            <button class="chart-filter" data-type="budgets">Budgets</button>
-                            <button class="chart-filter" data-type="depenses">Dépenses</button>
+        <div class="content-container">
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <!-- Section KPIs détaillés -->
+                <div class="detailed-kpis-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-chart-line"></i> Métriques Détaillées</h2>
+                        <div class="section-actions">
+                            <button class="btn-outline-primary btn-sm" onclick="exportKPIs()">
+                                <i class="fas fa-download"></i> Exporter
+                            </button>
                         </div>
                     </div>
-                    <div class="chart-content">
-                        <canvas id="financialChart" height="300"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="chart-row">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3><i class="fas fa-chart-pie"></i> Répartition par Module</h3>
-                    </div>
-                    <div class="chart-content">
-                        <canvas id="modulesChart" height="250"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3><i class="fas fa-chart-bar"></i> Activité RH</h3>
-                    </div>
-                    <div class="chart-content">
-                        <canvas id="hrChart" height="250"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3><i class="fas fa-tasks"></i> État des Projets</h3>
-                    </div>
-                    <div class="chart-content">
-                        <canvas id="projectsChart" height="250"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="chart-row">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3><i class="fas fa-users"></i> Engagement Membres</h3>
-                    </div>
-                    <div class="chart-content">
-                        <canvas id="engagementChart" height="250"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3><i class="fas fa-calendar-check"></i> Participation Événements</h3>
-                    </div>
-                    <div class="chart-content">
-                        <canvas id="eventsChart" height="250"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3><i class="fas fa-clock"></i> Performance Temps Réel</h3>
-                    </div>
-                    <div class="chart-content">
-                        <div class="realtime-metrics">
-                            <div class="metric-item">
-                                <span class="metric-label">Sessions actives</span>
-                                <span class="metric-value"><?php echo rand(5, 25); ?></span>
+                    <div class="detailed-kpis-grid">
+                        <div class="detailed-kpi-card growth">
+                            <div class="kpi-metric">
+                                <span class="metric-value"><?php echo rand(15, 35); ?>%</span>
+                                <span class="metric-label">Croissance Mensuelle</span>
                             </div>
-                            <div class="metric-item">
-                                <span class="metric-label">Pages vues/h</span>
-                                <span class="metric-value"><?php echo rand(100, 500); ?></span>
+                            <div class="kpi-sparkline">
+                                <canvas id="growthSparkline" width="80" height="30"></canvas>
                             </div>
-                            <div class="metric-item">
-                                <span class="metric-label">Actions/min</span>
-                                <span class="metric-value"><?php echo rand(10, 50); ?></span>
+                        </div>
+                        <div class="detailed-kpi-card efficiency">
+                            <div class="kpi-metric">
+                                <span class="metric-value"><?php echo rand(85, 95); ?>%</span>
+                                <span class="metric-label">Efficacité Opérationnelle</span>
+                            </div>
+                            <div class="kpi-sparkline">
+                                <canvas id="efficiencySparkline" width="80" height="30"></canvas>
+                            </div>
+                        </div>
+                        <div class="detailed-kpi-card satisfaction">
+                            <div class="kpi-metric">
+                                <span class="metric-value"><?php echo rand(4, 5); ?>.<?php echo rand(0, 9); ?>/5</span>
+                                <span class="metric-label">Satisfaction Client</span>
+                            </div>
+                            <div class="kpi-sparkline">
+                                <canvas id="satisfactionSparkline" width="80" height="30"></canvas>
+                            </div>
+                        </div>
+                        <div class="detailed-kpi-card roi">
+                            <div class="kpi-metric">
+                                <span class="metric-value"><?php echo rand(120, 180); ?>%</span>
+                                <span class="metric-label">ROI Projets</span>
+                            </div>
+                            <div class="kpi-sparkline">
+                                <canvas id="roiSparkline" width="80" height="30"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-row">
+                    <div class="chart-card large">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-chart-line"></i> Évolution Financière</h3>
+                            <div class="chart-controls">
+                                <button class="chart-filter active" data-type="donations">Dons</button>
+                                <button class="chart-filter" data-type="budgets">Budgets</button>
+                                <button class="chart-filter" data-type="depenses">Dépenses</button>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="financialChart" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-chart-pie"></i> Répartition par Module</h3>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="modulesChart" height="250"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-chart-bar"></i> Activité RH</h3>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="hrChart" height="250"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-tasks"></i> État des Projets</h3>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="projectsChart" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section Analytics Avancée -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-brain"></i> Analytics Avancée</h2>
+                    </div>
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <div class="analytics-header">
+                                <h4>Prédictions</h4>
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="analytics-content">
+                                <div class="prediction-item">
+                                    <span class="prediction-label">Dons prochains mois</span>
+                                    <span class="prediction-value">+<?php echo rand(8, 15); ?>%</span>
+                                </div>
+                                <div class="prediction-item">
+                                    <span class="prediction-label">Nouveaux membres</span>
+                                    <span class="prediction-value">+<?php echo rand(12, 25); ?>%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="analytics-card">
+                            <div class="analytics-header">
+                                <h4>Tendances</h4>
+                                <i class="fas fa-chart-trending-up"></i>
+                            </div>
+                            <div class="analytics-content">
+                                <div class="trend-item positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>Événements populaires</span>
+                                </div>
+                                <div class="trend-item positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>Engagement digital</span>
+                                </div>
+                                <div class="trend-item neutral">
+                                    <i class="fas fa-minus"></i>
+                                    <span>Coûts opérationnels</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="analytics-card">
+                            <div class="analytics-header">
+                                <h4>Recommandations</h4>
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="analytics-content">
+                                <div class="recommendation-item">
+                                    <span class="rec-priority high">Élevé</span>
+                                    <span class="rec-text">Augmenter budget marketing</span>
+                                </div>
+                                <div class="recommendation-item">
+                                    <span class="rec-priority medium">Moyen</span>
+                                    <span class="rec-text">Optimiser processus RH</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-users"></i> Engagement Membres</h3>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="engagementChart" height="250"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-calendar-check"></i> Participation Événements</h3>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="eventsChart" height="250"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-clock"></i> Performance Temps Réel</h3>
+                        </div>
+                        <div class="chart-content">
+                            <div class="realtime-metrics">
+                                <div class="metric-item">
+                                    <span class="metric-label">Sessions actives</span>
+                                    <span class="metric-value"><?php echo rand(5, 25); ?></span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Pages vues/h</span>
+                                    <span class="metric-value"><?php echo rand(100, 500); ?></span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Actions/min</span>
+                                    <span class="metric-value"><?php echo rand(10, 50); ?></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -459,986 +583,616 @@
     </div>
 </div>
 
-<!-- Styles CSS complets pour le dashboard professionnel -->
-<style>
-.complete-dashboard {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 20px;
-}
 
-.dashboard-nav {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 20px 30px;
-    margin-bottom: 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-.nav-left h1 {
-    margin: 0;
-    color: #2c3e50;
-    font-size: 1.8rem;
-    font-weight: 600;
-}
-
-.nav-left h1 i {
-    margin-right: 10px;
-    color: #667eea;
-}
-
-.nav-date {
-    color: #7f8c8d;
-    font-size: 0.9rem;
-    margin-left: 20px;
-}
-
-.nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.nav-btn {
-    background: #667eea;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.3s;
-}
-
-.nav-btn:hover {
-    background: #5a6fd8;
-    transform: translateY(-2px);
-}
-
-.time-range-selector select {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background: white;
-    font-size: 0.9rem;
-}
-
-.kpis-section {
-    margin-bottom: 30px;
-}
-
-.kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-}
-
-.kpi-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
-}
-
-.kpi-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-}
-
-.kpi-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-}
-
-.kpi-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 15px;
-}
-
-.kpi-icon {
-    font-size: 2.5rem;
-    opacity: 0.8;
-}
-
-.kpi-trend {
-    text-align: right;
-}
-
-.trend-value {
-    display: block;
-    font-size: 0.9rem;
-    font-weight: bold;
-    margin-bottom: 2px;
-}
-
-.trend-value.positive { color: #27ae60; }
-.trend-value.negative { color: #e74c3c; }
-.trend-value.neutral { color: #f39c12; }
-
-.trend-period {
-    font-size: 0.7rem;
-    color: #7f8c8d;
-}
-
-.kpi-content h2 {
-    margin: 0;
-    font-size: 2.2rem;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-bottom: 5px;
-}
-
-.kpi-content p {
-    margin: 0;
-    color: #7f8c8d;
-    font-size: 0.9rem;
-    margin-bottom: 10px;
-}
-
-.kpi-details {
-    display: flex;
-    gap: 15px;
-}
-
-.detail-item {
-    font-size: 0.8rem;
-    color: #34495e;
-    background: rgba(102, 126, 234, 0.1);
-    padding: 4px 8px;
-    border-radius: 4px;
-}
-
-/* Couleurs spécifiques pour chaque KPI */
-.kpi-card.members .kpi-icon { color: #3498db; }
-.kpi-card.finance .kpi-icon { color: #27ae60; }
-.kpi-card.projects .kpi-icon { color: #9b59b6; }
-.kpi-card.events .kpi-icon { color: #e67e22; }
-.kpi-card.hr .kpi-icon { color: #1abc9c; }
-.kpi-card.finance-advanced .kpi-icon { color: #f1c40f; }
-.kpi-card.crm .kpi-icon { color: #e74c3c; }
-.kpi-card.documents .kpi-icon { color: #95a5a6; }
-
-.main-content {
-    display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 30px;
-}
-
-.charts-section {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.chart-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 20px;
-}
-
-.chart-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
-
-.chart-card.large {
-    grid-column: 1 / -1;
-}
-
-.chart-header {
-    padding: 20px 25px;
-    background: rgba(255, 255, 255, 0.8);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.chart-header h3 {
-    margin: 0;
-    color: #2c3e50;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.chart-header h3 i {
-    margin-right: 8px;
-    color: #667eea;
-}
-
-.chart-controls {
-    display: flex;
-    gap: 8px;
-}
-
-.chart-filter {
-    padding: 6px 12px;
-    border: 1px solid #ddd;
-    background: white;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    transition: all 0.2s;
-}
-
-.chart-filter.active {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
-}
-
-.chart-content {
-    padding: 25px;
-    height: 300px;
-    position: relative;
-}
-
-.realtime-metrics {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    height: 100%;
-    justify-content: center;
-}
-
-.metric-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background: rgba(102, 126, 234, 0.1);
-    border-radius: 10px;
-}
-
-.metric-label {
-    font-weight: 500;
-    color: #2c3e50;
-}
-
-.metric-value {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #667eea;
-}
-
-.sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.sidebar-widget {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
-
-.widget-header {
-    padding: 15px 20px;
-    background: rgba(255, 255, 255, 0.8);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.widget-header h4 {
-    margin: 0;
-    color: #2c3e50;
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-.widget-header h4 i {
-    margin-right: 8px;
-    color: #667eea;
-}
-
-.alert-count {
-    background: #e74c3c;
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: bold;
-}
-
-.widget-content {
-    padding: 0;
-}
-
-#calendar {
-    height: 300px;
-    padding: 10px;
-}
-
-/* Alertes */
-.alert-item {
-    display: flex;
-    align-items: flex-start;
-    padding: 15px 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    transition: background 0.2s;
-}
-
-.alert-item:hover {
-    background: rgba(102, 126, 234, 0.05);
-}
-
-.alert-item:last-child {
-    border-bottom: none;
-}
-
-.alert-icon {
-    margin-right: 12px;
-    margin-top: 2px;
-}
-
-.alert-icon i {
-    font-size: 1.1rem;
-}
-
-.alert-item.warning .alert-icon i { color: #f39c12; }
-.alert-item.danger .alert-icon i { color: #e74c3c; }
-.alert-item.info .alert-icon i { color: #3498db; }
-.alert-item.success .alert-icon i { color: #27ae60; }
-
-.alert-message {
-    display: block;
-    font-weight: 500;
-    color: #2c3e50;
-    margin-bottom: 2px;
-}
-
-.alert-time {
-    font-size: 0.7rem;
-    color: #7f8c8d;
-}
-
-/* Tâches */
-.task-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    transition: background 0.2s;
-}
-
-.task-item:hover {
-    background: rgba(102, 126, 234, 0.05);
-}
-
-.task-item:last-child {
-    border-bottom: none;
-}
-
-.task-status {
-    margin-right: 12px;
-}
-
-.status-indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    display: inline-block;
-}
-
-.status-indicator.in-progress { background: #f39c12; }
-.status-indicator.pending { background: #95a5a6; }
-.status-indicator.completed { background: #27ae60; }
-
-.task-title {
-    display: block;
-    font-weight: 500;
-    color: #2c3e50;
-    margin-bottom: 2px;
-}
-
-.task-meta {
-    font-size: 0.7rem;
-    color: #7f8c8d;
-}
-
-.task-actions {
-    margin-left: auto;
-}
-
-.task-action-btn {
-    background: none;
-    border: none;
-    color: #7f8c8d;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 4px;
-    transition: all 0.2s;
-}
-
-.task-action-btn:hover {
-    background: rgba(39, 174, 96, 0.1);
-    color: #27ae60;
-}
-
-.add-task-btn {
-    background: #667eea;
-    color: white;
-    border: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    transition: all 0.2s;
-}
-
-.add-task-btn:hover {
-    background: #5a6fd8;
-    transform: scale(1.1);
-}
-
-/* Accès rapide */
-.quick-access-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    padding: 15px;
-}
-
-.quick-link {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 12px 8px;
-    text-decoration: none;
-    color: #7f8c8d;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    transition: all 0.3s;
-    text-align: center;
-}
-
-.quick-link:hover {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-.quick-link i {
-    font-size: 1.2rem;
-    margin-bottom: 4px;
-}
-
-.quick-link span {
-    font-size: 0.7rem;
-    font-weight: 500;
-}
-
-/* Métriques système */
-.system-metrics {
-    padding: 15px;
-}
-
-.metric {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.metric:last-child {
-    margin-bottom: 0;
-}
-
-.metric-label {
-    width: 60px;
-    font-size: 0.8rem;
-    color: #2c3e50;
-    font-weight: 500;
-}
-
-.metric-bar {
-    flex: 1;
-    height: 8px;
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    margin: 0 10px;
-    overflow: hidden;
-}
-
-.metric-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    border-radius: 4px;
-    transition: width 0.3s;
-}
-
-.metric-value {
-    width: 35px;
-    text-align: right;
-    font-size: 0.8rem;
-    color: #2c3e50;
-    font-weight: 500;
-}
-
-/* Responsive */
-@media (max-width: 1200px) {
-    .main-content {
-        grid-template-columns: 1fr;
-    }
-
-    .sidebar {
-        order: -1;
-    }
-}
-
-@media (max-width: 768px) {
-    .complete-dashboard {
-        padding: 10px;
-    }
-
-    .kpi-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .chart-row {
-        grid-template-columns: 1fr;
-    }
-
-    .dashboard-nav {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
-
-    .nav-actions {
-        justify-content: center;
-    }
-}
-
-/* Animations */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.kpi-card, .chart-card, .sidebar-widget {
-    animation: fadeInUp 0.6s ease-out;
-}
-
-.kpi-card:nth-child(1) { animation-delay: 0.1s; }
-.kpi-card:nth-child(2) { animation-delay: 0.2s; }
-.kpi-card:nth-child(3) { animation-delay: 0.3s; }
-.kpi-card:nth-child(4) { animation-delay: 0.4s; }
-.kpi-card:nth-child(5) { animation-delay: 0.5s; }
-.kpi-card:nth-child(6) { animation-delay: 0.6s; }
-.kpi-card:nth-child(7) { animation-delay: 0.7s; }
-.kpi-card:nth-child(8) { animation-delay: 0.8s; }
-</style>
 
 <!-- Scripts pour les graphiques et fonctionnalités avancées -->
 <script>
-// Données pour les graphiques depuis le backend
-const chartData = <?php echo json_encode($chart_data ?? []); ?>;
+    // Données pour les graphiques depuis le backend
+    const chartData = <?php echo json_encode($chart_data ?? []); ?>;
 
-// Données par défaut si vides
-if (!chartData.donations) {
-    chartData.donations = {
-        labels: ['2024-01', '2024-02', '2024-03', '2024-04', '2024-05', '2024-06'],
-        data: [1200, 1900, 3000, 5000, 2000, 3000]
-    };
-}
-if (!chartData.modules) {
-    chartData.modules = {
-        labels: ['RH', 'Finance', 'Projets', 'CRM', 'Documents', 'Support'],
-        data: [<?php echo $stats['total_employes'] ?? 0; ?>, <?php echo $stats['total_budgets'] ?? 0; ?>, <?php echo $stats['total_projects'] ?? 0; ?>, <?php echo $stats['total_contacts'] ?? 0; ?>, <?php echo $stats['total_documents'] ?? 0; ?>, 0]
-    };
-}
-if (!chartData.hr) {
-    chartData.hr = {
-        labels: ['Employés actifs', 'Contrats actifs', 'Absences', 'Pointages'],
-        data: [<?php echo $stats['total_employes'] ?? 0; ?>, <?php echo $stats['contrats_actifs'] ?? 0; ?>, <?php echo $stats['absences_en_cours'] ?? 0; ?>, 150]
-    };
-}
-if (!chartData.projects) {
-    chartData.projects = {
-        labels: ['Planification', 'Actif', 'Terminé', 'En pause'],
-        data: [5, <?php echo $stats['total_projects'] ?? 0; ?>, 12, 2]
-    };
-}
+    // Données par défaut si vides
+    if (!chartData.donations) {
+        chartData.donations = {
+            labels: ['2024-01', '2024-02', '2024-03', '2024-04', '2024-05', '2024-06'],
+            data: [1200, 1900, 3000, 5000, 2000, 3000]
+        };
+    }
+    if (!chartData.modules) {
+        chartData.modules = {
+            labels: ['RH', 'Finance', 'Projets', 'CRM', 'Documents', 'Support'],
+            data: [<?php echo $stats['total_employes'] ?? 0; ?>, <?php echo $stats['total_budgets'] ?? 0; ?>, <?php echo $stats['total_projects'] ?? 0; ?>, <?php echo $stats['total_contacts'] ?? 0; ?>, <?php echo $stats['total_documents'] ?? 0; ?>, 0]
+        };
+    }
+    if (!chartData.hr) {
+        chartData.hr = {
+            labels: ['Employés actifs', 'Contrats actifs', 'Absences', 'Pointages'],
+            data: [<?php echo $stats['total_employes'] ?? 0; ?>, <?php echo $stats['contrats_actifs'] ?? 0; ?>, <?php echo $stats['absences_en_cours'] ?? 0; ?>, 150]
+        };
+    }
+    if (!chartData.projects) {
+        chartData.projects = {
+            labels: ['Planification', 'Actif', 'Terminé', 'En pause'],
+            data: [5, <?php echo $stats['total_projects'] ?? 0; ?>, 12, 2]
+        };
+    }
 
-// Graphique financier principal
-const financialCtx = document.getElementById('financialChart').getContext('2d');
-let financialChart = new Chart(financialCtx, {
-    type: 'line',
-    data: {
-        labels: chartData.donations.labels,
-        datasets: [{
-            label: 'Dons (€)',
-            data: chartData.donations.data,
-            borderColor: '#667eea',
-            backgroundColor: 'rgba(102, 126, 234, 0.1)',
-            tension: 0.4,
-            fill: true,
-            pointBackgroundColor: '#667eea',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            pointRadius: 6,
-            pointHoverRadius: 8
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { display: false }
+    // Graphique financier principal
+    const financialCtx = document.getElementById('financialChart').getContext('2d');
+    let financialChart = new Chart(financialCtx, {
+        type: 'line',
+        data: {
+            labels: chartData.donations.labels,
+            datasets: [{
+                label: 'Dons (€)',
+                data: chartData.donations.data,
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#667eea',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }]
         },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    callback: function(value) {
-                        return new Intl.NumberFormat('fr-FR', {
-                            style: 'currency',
-                            currency: 'EUR',
-                            minimumFractionDigits: 0
-                        }).format(value);
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return new Intl.NumberFormat('fr-FR', {
+                                style: 'currency',
+                                currency: 'EUR',
+                                minimumFractionDigits: 0
+                            }).format(value);
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
                     }
                 },
-                grid: {
-                    color: 'rgba(0,0,0,0.05)'
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
                 }
             },
-            x: {
-                grid: {
-                    color: 'rgba(0,0,0,0.05)'
-                }
+            interaction: {
+                intersect: false,
+                mode: 'index'
             }
-        },
-        interaction: {
-            intersect: false,
-            mode: 'index'
         }
-    }
-});
-
-// Gestion des filtres du graphique financier
-document.querySelectorAll('.chart-filter').forEach(btn => {
-    btn.addEventListener('click', function() {
-        document.querySelectorAll('.chart-filter').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-
-        const type = this.dataset.type;
-        let newData, newLabel;
-
-        switch(type) {
-            case 'donations':
-                newData = chartData.donations.data;
-                newLabel = 'Dons (€)';
-                break;
-            case 'budgets':
-                newData = [5000, 8000, 12000, 15000, 10000, 18000];
-                newLabel = 'Budgets (€)';
-                break;
-            case 'depenses':
-                newData = [3000, 4500, 6000, 7500, 4000, 5500];
-                newLabel = 'Dépenses (€)';
-                break;
-        }
-
-        financialChart.data.datasets[0].data = newData;
-        financialChart.data.datasets[0].label = newLabel;
-        financialChart.update();
     });
-});
 
-// Graphique des modules
-const modulesCtx = document.getElementById('modulesChart').getContext('2d');
-new Chart(modulesCtx, {
-    type: 'doughnut',
-    data: {
-        labels: chartData.modules.labels,
-        datasets: [{
-            data: chartData.modules.data,
-            backgroundColor: [
-                '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'
-            ],
-            borderWidth: 0,
-            hoverBorderWidth: 2,
-            hoverBorderColor: '#fff'
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom',
-                labels: {
-                    padding: 20,
-                    usePointStyle: true
-                }
-            }
-        },
-        cutout: '60%'
-    }
-});
+    // Gestion des filtres du graphique financier
+    document.querySelectorAll('.chart-filter').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.chart-filter').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
 
-// Graphique RH
-const hrCtx = document.getElementById('hrChart').getContext('2d');
-new Chart(hrCtx, {
-    type: 'bar',
-    data: {
-        labels: chartData.hr.labels,
-        datasets: [{
-            label: 'RH',
-            data: chartData.hr.data,
-            backgroundColor: [
-                '#667eea', '#764ba2', '#f093fb', '#f5576c'
-            ],
-            borderRadius: 8,
-            borderSkipped: false
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { display: false }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                grid: { color: 'rgba(0,0,0,0.05)' }
-            },
-            x: {
-                grid: { color: 'rgba(0,0,0,0.05)' }
-            }
-        }
-    }
-});
+            const type = this.dataset.type;
+            let newData, newLabel;
 
-// Graphique projets
-const projectsCtx = document.getElementById('projectsChart').getContext('2d');
-new Chart(projectsCtx, {
-    type: 'pie',
-    data: {
-        labels: chartData.projects.labels,
-        datasets: [{
-            data: chartData.projects.data,
-            backgroundColor: [
-                '#95a5a6', '#667eea', '#27ae60', '#ffc107'
-            ],
-            borderWidth: 0,
-            hoverBorderWidth: 2,
-            hoverBorderColor: '#fff'
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom',
-                labels: {
-                    padding: 15,
-                    usePointStyle: true
-                }
+            switch (type) {
+                case 'donations':
+                    newData = chartData.donations.data;
+                    newLabel = 'Dons (€)';
+                    break;
+                case 'budgets':
+                    newData = [5000, 8000, 12000, 15000, 10000, 18000];
+                    newLabel = 'Budgets (€)';
+                    break;
+                case 'depenses':
+                    newData = [3000, 4500, 6000, 7500, 4000, 5500];
+                    newLabel = 'Dépenses (€)';
+                    break;
             }
-        }
-    }
-});
 
-// Graphique engagement membres
-const engagementCtx = document.getElementById('engagementChart').getContext('2d');
-new Chart(engagementCtx, {
-    type: 'radar',
-    data: {
-        labels: ['Participation événements', 'Dons réguliers', 'Volontariat', 'Communication', 'Satisfaction'],
-        datasets: [{
-            label: 'Niveau d\'engagement',
-            data: [85, 70, 60, 75, 80],
-            backgroundColor: 'rgba(102, 126, 234, 0.2)',
-            borderColor: '#667eea',
-            borderWidth: 2,
-            pointBackgroundColor: '#667eea',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            pointRadius: 4
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { display: false }
-        },
-        scales: {
-            r: {
-                beginAtZero: true,
-                max: 100,
-                ticks: {
-                    stepSize: 20
-                }
-            }
-        }
-    }
-});
-
-// Graphique participation événements
-const eventsChartCtx = document.getElementById('eventsChart').getContext('2d');
-new Chart(eventsChartCtx, {
-    type: 'line',
-    data: {
-        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun'],
-        datasets: [{
-            label: 'Participants',
-            data: [45, 52, 38, 61, 55, 67],
-            borderColor: '#27ae60',
-            backgroundColor: 'rgba(39, 174, 96, 0.1)',
-            tension: 0.4,
-            fill: true,
-            pointBackgroundColor: '#27ae60',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            pointRadius: 5
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { display: false }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                grid: { color: 'rgba(0,0,0,0.05)' }
-            },
-            x: {
-                grid: { color: 'rgba(0,0,0,0.05)' }
-            }
-        }
-    }
-});
-
-// Initialisation du calendrier
-document.addEventListener('DOMContentLoaded', function() {
-    const calendarEl = document.getElementById('calendar');
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek'
-        },
-        events: [
-            {
-                title: 'Réunion CA',
-                start: '2024-02-15',
-                backgroundColor: '#667eea'
-            },
-            {
-                title: 'Événement solidaire',
-                start: '2024-02-20',
-                backgroundColor: '#27ae60'
-            },
-            {
-                title: 'Formation équipe',
-                start: '2024-02-25',
-                backgroundColor: '#f39c12'
-            }
-        ],
-        height: 300,
-        dayMaxEvents: 2,
-        moreLinkClick: 'popover'
+            financialChart.data.datasets[0].data = newData;
+            financialChart.data.datasets[0].label = newLabel;
+            financialChart.update();
+        });
     });
-    calendar.render();
-});
 
-// Fonctions utilitaires
-function refreshDashboard() {
-    // Animation de chargement
-    const btn = document.querySelector('.refresh-btn');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualisation...';
-    btn.disabled = true;
+    // Graphique des modules
+    const modulesCtx = document.getElementById('modulesChart').getContext('2d');
+    new Chart(modulesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: chartData.modules.labels,
+            datasets: [{
+                data: chartData.modules.data,
+                backgroundColor: [
+                    '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'
+                ],
+                borderWidth: 0,
+                hoverBorderWidth: 2,
+                hoverBorderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            },
+            cutout: '60%'
+        }
+    });
 
-    setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        // Ici on pourrait recharger les données
-        location.reload();
-    }, 2000);
-}
+    // Graphique RH
+    const hrCtx = document.getElementById('hrChart').getContext('2d');
+    new Chart(hrCtx, {
+        type: 'bar',
+        data: {
+            labels: chartData.hr.labels,
+            datasets: [{
+                label: 'RH',
+                data: chartData.hr.data,
+                backgroundColor: [
+                    '#667eea', '#764ba2', '#f093fb', '#f5576c'
+                ],
+                borderRadius: 8,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                }
+            }
+        }
+    });
 
-function changeTimeRange(range) {
-    // Ici on pourrait changer la période des graphiques
-    console.log('Changement de période:', range);
-}
+    // Graphique projets
+    const projectsCtx = document.getElementById('projectsChart').getContext('2d');
+    new Chart(projectsCtx, {
+        type: 'pie',
+        data: {
+            labels: chartData.projects.labels,
+            datasets: [{
+                data: chartData.projects.data,
+                backgroundColor: [
+                    '#95a5a6', '#667eea', '#27ae60', '#ffc107'
+                ],
+                borderWidth: 0,
+                hoverBorderWidth: 2,
+                hoverBorderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
 
-function addNewTask() {
-    // Fonction pour ajouter une nouvelle tâche
-    alert('Fonctionnalité d\'ajout de tâche à implémenter');
-}
+    // Graphique engagement membres
+    const engagementCtx = document.getElementById('engagementChart').getContext('2d');
+    new Chart(engagementCtx, {
+        type: 'radar',
+        data: {
+            labels: ['Participation événements', 'Dons réguliers', 'Volontariat', 'Communication', 'Satisfaction'],
+            datasets: [{
+                label: 'Niveau d\'engagement',
+                data: [85, 70, 60, 75, 80],
+                backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                borderColor: '#667eea',
+                borderWidth: 2,
+                pointBackgroundColor: '#667eea',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        stepSize: 20
+                    }
+                }
+            }
+        }
+    });
 
-function completeTask(btn) {
-    // Animation de completion
-    const taskItem = btn.closest('.task-item');
-    taskItem.style.transition = 'all 0.3s';
-    taskItem.style.opacity = '0.5';
+    // Graphique participation événements
+    const eventsChartCtx = document.getElementById('eventsChart').getContext('2d');
+    new Chart(eventsChartCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun'],
+            datasets: [{
+                label: 'Participants',
+                data: [45, 52, 38, 61, 55, 67],
+                borderColor: '#27ae60',
+                backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#27ae60',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                }
+            }
+        }
+    });
 
-    setTimeout(() => {
-        taskItem.remove();
-    }, 300);
-}
+    // Initialisation du calendrier
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek'
+            },
+            events: [{
+                    title: 'Réunion CA',
+                    start: '2024-02-15',
+                    backgroundColor: '#667eea'
+                },
+                {
+                    title: 'Événement solidaire',
+                    start: '2024-02-20',
+                    backgroundColor: '#27ae60'
+                },
+                {
+                    title: 'Formation équipe',
+                    start: '2024-02-25',
+                    backgroundColor: '#f39c12'
+                }
+            ],
+            height: 300,
+            dayMaxEvents: 2,
+            moreLinkClick: 'popover'
+        });
+        calendar.render();
+    });
 
-// Animation au chargement
-document.addEventListener('DOMContentLoaded', function() {
-    // Animations d'entrée
-    const cards = document.querySelectorAll('.kpi-card, .chart-card, .sidebar-widget');
-    cards.forEach((card, index) => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
+    // Fonctions utilitaires
+    function refreshDashboard() {
+        // Animation de chargement
+        const btn = document.querySelector('.refresh-btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualisation...';
+        btn.disabled = true;
+
         setTimeout(() => {
-            card.style.transition = 'all 0.6s ease-out';
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        }, index * 100);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            // Ici on pourrait recharger les données
+            location.reload();
+        }, 2000);
+    }
+
+    function changeTimeRange(range) {
+        // Ici on pourrait changer la période des graphiques
+        console.log('Changement de période:', range);
+    }
+
+    function addNewTask() {
+        // Fonction pour ajouter une nouvelle tâche
+        alert('Fonctionnalité d\'ajout de tâche à implémenter');
+    }
+
+    function completeTask(btn) {
+        // Animation de completion
+        const taskItem = btn.closest('.task-item');
+        taskItem.style.transition = 'all 0.3s';
+        taskItem.style.opacity = '0.5';
+
+        setTimeout(() => {
+            taskItem.remove();
+        }, 300);
+    }
+
+    // Animation au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animations d'entrée
+        const cards = document.querySelectorAll('.kpi-card, .chart-card, .sidebar-widget');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease-out';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+
+        // Initialiser les sparklines pour les KPIs détaillés
+        initializeSparklines();
     });
-});
+
+    // Fonction pour initialiser les sparklines
+    function initializeSparklines() {
+        // Sparkline pour la croissance
+        const growthCtx = document.getElementById('growthSparkline');
+        if (growthCtx) {
+            new Chart(growthCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun'],
+                    datasets: [{
+                        data: [15, 18, 22, 19, 25, 28],
+                        borderColor: '#00D4AA',
+                        borderWidth: 2,
+                        fill: false,
+                        pointRadius: 0,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            display: false
+                        }
+                    },
+                    elements: {
+                        point: {
+                            hoverRadius: 0
+                        }
+                    }
+                }
+            });
+        }
+
+        // Sparkline pour l'efficacité
+        const efficiencyCtx = document.getElementById('efficiencySparkline');
+        if (efficiencyCtx) {
+            new Chart(efficiencyCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun'],
+                    datasets: [{
+                        data: [82, 85, 88, 86, 91, 89],
+                        borderColor: '#00C4CC',
+                        borderWidth: 2,
+                        fill: false,
+                        pointRadius: 0,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            display: false
+                        }
+                    },
+                    elements: {
+                        point: {
+                            hoverRadius: 0
+                        }
+                    }
+                }
+            });
+        }
+
+        // Sparkline pour la satisfaction
+        const satisfactionCtx = document.getElementById('satisfactionSparkline');
+        if (satisfactionCtx) {
+            new Chart(satisfactionCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun'],
+                    datasets: [{
+                        data: [4.1, 4.3, 4.2, 4.5, 4.4, 4.6],
+                        borderColor: '#FFD23F',
+                        borderWidth: 2,
+                        fill: false,
+                        pointRadius: 0,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            display: false
+                        }
+                    },
+                    elements: {
+                        point: {
+                            hoverRadius: 0
+                        }
+                    }
+                }
+            });
+        }
+
+        // Sparkline pour le ROI
+        const roiCtx = document.getElementById('roiSparkline');
+        if (roiCtx) {
+            new Chart(roiCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun'],
+                    datasets: [{
+                        data: [110, 125, 118, 140, 135, 155],
+                        borderColor: '#FF6B9D',
+                        borderWidth: 2,
+                        fill: false,
+                        pointRadius: 0,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            display: false
+                        }
+                    },
+                    elements: {
+                        point: {
+                            hoverRadius: 0
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const themeIcon = document.querySelector('.theme-toggle i');
+
+        if (html.getAttribute('data-theme') === 'dark') {
+            html.removeAttribute('data-theme');
+            themeIcon.className = 'fas fa-moon';
+            localStorage.setItem('theme', 'light');
+        } else {
+            html.setAttribute('data-theme', 'dark');
+            themeIcon.className = 'fas fa-sun';
+            localStorage.setItem('theme', 'dark');
+        }
+    }
+
+    // Load saved theme
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hide loading overlay
+        setTimeout(() => {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                setTimeout(() => overlay.remove(), 500);
+            }
+        }, 1000);
+
+        // Animations d'entrée
+        const cards = document.querySelectorAll('.kpi-card, .chart-card, .sidebar-widget, .detailed-kpi-card, .analytics-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease-out';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+
+        // Initialiser les sparklines pour les KPIs détaillés
+        initializeSparklines();
+
+        const savedTheme = localStorage.getItem('theme');
+        const themeIcon = document.querySelector('.theme-toggle i');
+
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeIcon.className = 'fas fa-sun';
+        } else {
+            themeIcon.className = 'fas fa-moon';
+        }
+    });
 </script>
 
 <?php include VIEWS_PATH . 'footer.php'; ?>

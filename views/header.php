@@ -6,8 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($pageTitle) ? $pageTitle . ' - ' . APP_NAME : APP_NAME; ?></title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/style.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/sidebar.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script src="<?php echo BASE_URL; ?>/assets/js/main.js" defer></script>
+    <script src="<?php echo BASE_URL; ?>/assets/js/dashboard.js" defer></script>
 </head>
 
 <body>
@@ -15,6 +18,9 @@
     <div id="loading-indicator" class="loading-indicator" style="display: none;">
         <div class="spinner"></div>
     </div>
+
+    <!-- Floating Sidebar -->
+    <?php include 'sidebar.php'; ?>
 
     <header class="header">
         <nav class="navbar">
@@ -33,7 +39,24 @@
                     </div>
                 </form>
             </div>
-
+            <!--   -->
+            <div class="nav-actions">
+                <button class="nav-btn theme-toggle" onclick="toggleTheme()" title="Basculer le thème">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="nav-btn refresh-btn" onclick="refreshDashboard()">
+                    <i class="fas fa-sync-alt"></i> Actualiser
+                </button>
+                <div class="time-range-selector">
+                    <select id="timeRange" onchange="changeTimeRange(this.value)">
+                        <option value="7d">7 jours</option>
+                        <option value="30d" selected>30 jours</option>
+                        <option value="90d">90 jours</option>
+                        <option value="1y">1 an</option>
+                    </select>
+                </div>
+            </div>
+            <!--   -->
             <!-- Mobile menu toggle -->
             <button class="navbar-toggler" type="button" aria-label="Toggle navigation">
                 <i class="fas fa-bars"></i>
@@ -140,10 +163,8 @@
         <?php endif; ?>
     </header>
 
-    <main class="main-content">
-        <div class="container">
-            <?php if (isset($flash) && $flash): ?>
-                <div class="alert alert-<?php echo $flash['type']; ?>" role="alert">
-                    <?php echo htmlspecialchars($flash['message']); ?>
-                </div>
-            <?php endif; ?>
+    <?php if (isset($flash) && $flash): ?>
+        <div class="alert alert-<?php echo $flash['type']; ?>" role="alert">
+            <?php echo htmlspecialchars($flash['message']); ?>
+        </div>
+    <?php endif; ?>

@@ -39,11 +39,12 @@ class MemberController extends Controller
 
         $flash = $this->getFlash();
 
-        $this->renderContent('members/index', [
+        $this->renderPage('members/index', [
             'members' => $members,
             'search' => $search,
             'status' => $status,
-            'flash' => $flash
+            'flash' => $flash,
+            'pageTitle' => 'Gestion des Membres'
         ]);
     }
 
@@ -55,7 +56,7 @@ class MemberController extends Controller
         $this->requireAuth();
         $flash = $this->getFlash();
 
-        $this->renderContent('members/create', [
+        $this->renderPage('members/create', [
             'flash' => $flash
         ]);
     }
@@ -109,7 +110,7 @@ class MemberController extends Controller
 
         $flash = $this->getFlash();
 
-        $this->renderContent('members/show', [
+        $this->renderPage('members/show', [
             'member' => $member,
             'flash' => $flash
         ]);
@@ -135,7 +136,7 @@ class MemberController extends Controller
 
         $flash = $this->getFlash();
 
-        $this->renderContent('members/edit', [
+        $this->renderPage('members/edit', [
             'member' => $member,
             'flash' => $flash
         ]);
@@ -213,7 +214,7 @@ class MemberController extends Controller
         $members = $this->memberModel->search($query);
         $flash = $this->getFlash();
 
-        $this->renderContent('members/search', [
+        $this->renderPage('members/search', [
             'members' => $members,
             'query' => $query,
             'flash' => $flash
