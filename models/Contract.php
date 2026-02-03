@@ -2,10 +2,12 @@
 
 class Contract extends Model
 {
-    protected $table = 'contracts';
+    protected $table = 'contrats';
     protected $fillable = [
         'employee_id',
+        'employe_id',
         'contract_type',
+        'type',
         'contract_number',
         'start_date',
         'end_date',

@@ -4,7 +4,9 @@ class Absence extends Model
 {
     protected $table = 'absences';
     protected $fillable = [
+        'employe_id',
         'employee_id',
+        'type',
         'absence_type',
         'start_date',
         'end_date',

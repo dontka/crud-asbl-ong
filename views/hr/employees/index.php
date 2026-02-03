@@ -3,54 +3,18 @@ $pageTitle = $pageTitle ?? 'Gestion des Employés';
 ?>
 
 <div class="main-content">
-    <!-- Header -->
-    <div class="dashboard-nav">
-        <div class="nav-container">
-            <div class="nav-left">
-                <h1>Gestion des Employés</h1>
-            </div>
+
+    <!-- Employees Table -->
+    <div class="chart-card" style="margin: var(--spacing-xl);">
+        <div class="chart-header">
+            <h3>Liste des Employés</h3>
             <div class="nav-actions">
                 <a href="/hr/create" class="nav-btn">
                     <i class="fas fa-plus"></i> Ajouter un Employé
                 </a>
             </div>
         </div>
-    </div>
 
-    <!-- Filters -->
-    <div class="chart-card" style="margin: var(--spacing-xl);">
-        <div class="chart-content">
-            <form method="GET" action="/hr" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); align-items: end;">
-                <div>
-                    <label style="display: block; margin-bottom: var(--spacing-sm); font-weight: 600;">Rechercher</label>
-                    <input type="text" name="search" placeholder="Nom, email, numéro..."
-                        value="<?php echo htmlspecialchars($search ?? ''); ?>"
-                        style="width: 100%; padding: var(--spacing-sm); border: 1px solid var(--gray-300); border-radius: var(--border-radius);">
-                </div>
-                <div>
-                    <label style="display: block; margin-bottom: var(--spacing-sm); font-weight: 600;">Département</label>
-                    <select name="department" style="width: 100%; padding: var(--spacing-sm); border: 1px solid var(--gray-300); border-radius: var(--border-radius);">
-                        <option value="">Tous les départements</option>
-                        <?php foreach ($departments as $dept): ?>
-                            <option value="<?php echo htmlspecialchars($dept); ?>"
-                                <?php echo ($department === $dept) ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($dept); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <button type="submit" class="nav-btn" style="justify-self: start;">
-                    <i class="fas fa-search"></i> Filtrer
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Employees Table -->
-    <div class="chart-card" style="margin: var(--spacing-xl);">
-        <div class="chart-header">
-            <h3>Liste des Employés</h3>
-        </div>
         <div class="chart-content">
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse;">
@@ -128,4 +92,35 @@ $pageTitle = $pageTitle ?? 'Gestion des Employés';
             <?php endif; ?>
         </div>
     </div>
+
+    <!-- Filters -->
+    <div class="chart-card" style="margin: var(--spacing-xl);">
+        <div class="chart-content">
+            <form method="GET" action="/hr" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); align-items: end;">
+                <div>
+                    <label style="display: block; margin-bottom: var(--spacing-sm); font-weight: 600;">Rechercher</label>
+                    <input type="text" name="search" placeholder="Nom, email, numéro..."
+                        value="<?php echo htmlspecialchars($search ?? ''); ?>"
+                        style="width: 100%; padding: var(--spacing-sm); border: 1px solid var(--gray-300); border-radius: var(--border-radius);">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: var(--spacing-sm); font-weight: 600;">Département</label>
+                    <select name="department" style="width: 100%; padding: var(--spacing-sm); border: 1px solid var(--gray-300); border-radius: var(--border-radius);">
+                        <option value="">Tous les départements</option>
+                        <?php foreach ($departments as $dept): ?>
+                            <option value="<?php echo htmlspecialchars($dept); ?>"
+                                <?php echo ($department === $dept) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($dept); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <button type="submit" class="nav-btn" style="justify-self: start;">
+                    <i class="fas fa-search"></i> Filtrer
+                </button>
+            </form>
+        </div>
+    </div>
+
+
 </div>

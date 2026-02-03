@@ -1,5 +1,7 @@
 <?php
 $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
+$isEdit = isset($contract) && !empty($contract);
+$formAction = $isEdit ? '/hr/update-contract/' . $contract['id'] : '/hr/store-contract';
 ?>
 
 <div class="main-content">
@@ -8,7 +10,7 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
     <div style="max-width: auto; margin: var(--spacing-xl);">
         <div class="chart-card">
             <div class="chart-content" style="padding: var(--spacing-xl);">
-                <form method="POST" action="/hr/store-contract">
+                <form method="POST" action="<?php echo $formAction; ?>">
                     <!-- Section: Informations Principales -->
                     <div style="margin-bottom: var(--spacing-xl);">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -33,7 +35,7 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
                                 <select name="employee_id" id="employee_id" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; background-color: white; cursor: pointer; transition: border-color 0.2s;">
                                     <option value="">Sélectionner un employé</option>
                                     <?php foreach ($employees ?? [] as $emp): ?>
-                                        <option value="<?php echo $emp['id']; ?>">
+                                        <option value="<?php echo $emp['id']; ?>" <?php echo ($isEdit && $contract['employee_id'] == $emp['id']) ? 'selected' : ''; ?>>
                                             <?php echo htmlspecialchars(($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? '')); ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -48,11 +50,11 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
                                 </label>
                                 <select name="contract_type" id="contract_type" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; background-color: white; cursor: pointer;">
                                     <option value="">Sélectionner un type</option>
-                                    <option value="CDI">CDI</option>
-                                    <option value="CDD">CDD</option>
-                                    <option value="Stage">Stage</option>
-                                    <option value="Temporaire">Temporaire</option>
-                                    <option value="Freelance">Freelance</option>
+                                    <option value="CDI" <?php echo ($isEdit && $contract['contract_type'] == 'CDI') ? 'selected' : ''; ?>>CDI</option>
+                                    <option value="CDD" <?php echo ($isEdit && $contract['contract_type'] == 'CDD') ? 'selected' : ''; ?>>CDD</option>
+                                    <option value="Stage" <?php echo ($isEdit && $contract['contract_type'] == 'Stage') ? 'selected' : ''; ?>>Stage</option>
+                                    <option value="Temporaire" <?php echo ($isEdit && $contract['contract_type'] == 'Temporaire') ? 'selected' : ''; ?>>Temporaire</option>
+                                    <option value="Freelance" <?php echo ($isEdit && $contract['contract_type'] == 'Freelance') ? 'selected' : ''; ?>>Freelance</option>
                                 </select>
                             </div>
 
@@ -62,7 +64,7 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
                                     <i class="fas fa-barcode" style="color: var(--primary-color); margin-right: 6px;"></i>
                                     Numéro de Contrat
                                 </label>
-                                <input type="text" name="contract_number" id="contract_number" placeholder="ex: CTR-2024-001" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
+                                <input type="text" name="contract_number" id="contract_number" placeholder="ex: CTR-2024-001" value="<?php echo $isEdit ? htmlspecialchars($contract['contract_number'] ?? '') : ''; ?>" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
                             </div>
 
                             <!-- Status -->
@@ -72,9 +74,9 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
                                     Statut
                                 </label>
                                 <select name="status" id="status" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; background-color: white; cursor: pointer;">
-                                    <option value="active">Actif</option>
-                                    <option value="inactive">Inactif</option>
-                                    <option value="ended">Terminé</option>
+                                    <option value="active" <?php echo ($isEdit && $contract['status'] == 'active') ? 'selected' : ''; ?>>Actif</option>
+                                    <option value="inactive" <?php echo ($isEdit && $contract['status'] == 'inactive') ? 'selected' : ''; ?>>Inactif</option>
+                                    <option value="ended" <?php echo ($isEdit && $contract['status'] == 'ended') ? 'selected' : ''; ?>>Terminé</option>
                                 </select>
                             </div>
                         </div>
@@ -93,7 +95,7 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
                                     <i class="fas fa-play-circle" style="color: var(--primary-color); margin-right: 6px;"></i>
                                     Date de Début <span style="color: var(--danger-color);">*</span>
                                 </label>
-                                <input type="date" name="start_date" id="start_date" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
+                                <input type="date" name="start_date" id="start_date" required value="<?php echo $isEdit ? htmlspecialchars($contract['start_date'] ?? '') : ''; ?>" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
                             </div>
 
                             <!-- End Date -->
@@ -102,7 +104,7 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
                                     <i class="fas fa-stop-circle" style="color: var(--primary-color); margin-right: 6px;"></i>
                                     Date de Fin
                                 </label>
-                                <input type="date" name="end_date" id="end_date" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
+                                <input type="date" name="end_date" id="end_date" value="<?php echo $isEdit ? htmlspecialchars($contract['end_date'] ?? '') : ''; ?>" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
                             </div>
 
                             <!-- Renewal Date -->
@@ -111,7 +113,7 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
                                     <i class="fas fa-redo" style="color: var(--primary-color); margin-right: 6px;"></i>
                                     Date de Renouvellement
                                 </label>
-                                <input type="date" name="renewal_date" id="renewal_date" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
+                                <input type="date" name="renewal_date" id="renewal_date" value="<?php echo $isEdit ? htmlspecialchars($contract['renewal_date'] ?? '') : ''; ?>" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
                             </div>
 
                             <!-- Probation End Date -->
@@ -120,7 +122,7 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
                                     <i class="fas fa-hourglass-end" style="color: var(--primary-color); margin-right: 6px;"></i>
                                     Date de Fin de Probation
                                 </label>
-                                <input type="date" name="probation_end_date" id="probation_end_date" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
+                                <input type="date" name="probation_end_date" id="probation_end_date" value="<?php echo $isEdit ? htmlspecialchars($contract['probation_end_date'] ?? '') : ''; ?>" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
                             </div>
                         </div>
                     </div>
@@ -138,7 +140,7 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
                                     <i class="fas fa-heading" style="color: var(--primary-color); margin-right: 6px;"></i>
                                     Titre du Poste
                                 </label>
-                                <input type="text" name="position_title" id="position_title" placeholder="ex: Gestionnaire RH" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
+                                <input type="text" name="position_title" id="position_title" placeholder="ex: Gestionnaire RH" value="<?php echo $isEdit ? htmlspecialchars($contract['position_title'] ?? '') : ''; ?>" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
                             </div>
 
                             <!-- Salary -->
@@ -147,7 +149,7 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
                                     <i class="fas fa-euro-sign" style="color: var(--primary-color); margin-right: 6px;"></i>
                                     Salaire
                                 </label>
-                                <input type="number" name="salary" id="salary" step="0.01" placeholder="0.00" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
+                                <input type="number" name="salary" id="salary" step="0.01" placeholder="0.00" value="<?php echo $isEdit ? htmlspecialchars($contract['salary'] ?? '') : ''; ?>" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
                             </div>
 
                             <!-- Working Hours -->
@@ -156,7 +158,7 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
                                     <i class="fas fa-clock" style="color: var(--primary-color); margin-right: 6px;"></i>
                                     Heures de Travail (par semaine)
                                 </label>
-                                <input type="number" name="working_hours" id="working_hours" step="0.5" placeholder="35" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
+                                <input type="number" name="working_hours" id="working_hours" step="0.5" placeholder="35" value="<?php echo $isEdit ? htmlspecialchars($contract['working_hours'] ?? '') : ''; ?>" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
                             </div>
 
                             <!-- Probation Period -->
@@ -165,7 +167,7 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
                                     <i class="fas fa-calendar-check" style="color: var(--primary-color); margin-right: 6px;"></i>
                                     Période de Probation (jours)
                                 </label>
-                                <input type="number" name="probation_period_days" id="probation_period_days" placeholder="90" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
+                                <input type="number" name="probation_period_days" id="probation_period_days" placeholder="90" value="<?php echo $isEdit ? htmlspecialchars($contract['probation_period_days'] ?? '') : ''; ?>" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;">
                             </div>
                         </div>
                     </div>
@@ -181,7 +183,7 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
                                 <i class="fas fa-pen-fancy" style="color: var(--primary-color); margin-right: 6px;"></i>
                                 Notes
                             </label>
-                            <textarea name="notes" id="notes" rows="4" placeholder="Ajoutez des notes supplémentaires concernant ce contrat..." style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box; resize: vertical; font-family: inherit;"></textarea>
+                            <textarea name="notes" id="notes" rows="4" placeholder="Ajoutez des notes supplémentaires concernant ce contrat..." style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box; resize: vertical; font-family: inherit;"><?php echo $isEdit ? htmlspecialchars($contract['notes'] ?? '') : ''; ?></textarea>
                         </div>
                     </div>
 
@@ -191,7 +193,7 @@ $pageTitle = $pageTitle ?? 'Créer un Nouveau Contrat';
                             <i class="fas fa-times"></i> Annuler
                         </a>
                         <button type="submit" id="submitBtn" style="padding: 10px 24px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-save"></i> Créer le Contrat
+                            <i class="fas fa-save"></i> <?php echo $isEdit ? 'Éditer le Contrat' : 'Créer le Contrat'; ?>
                         </button>
                     </div>
                 </form>

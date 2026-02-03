@@ -3,20 +3,6 @@ $pageTitle = $pageTitle ?? 'Gestion des Absences';
 ?>
 
 <div class="main-content">
-    <!-- Header -->
-    <div class="dashboard-nav">
-        <div class="nav-container">
-            <div class="nav-left">
-                <h1>Gestion des Absences</h1>
-            </div>
-            <div class="nav-right">
-                <a href="/hr/request-absence" class="nav-btn btn-primary">
-                    <i class="fas fa-plus"></i> Nouvelle Absence
-                </a>
-            </div>
-        </div>
-    </div>
-
     <!-- Absences List -->
     <div class="chart-card" style="margin: var(--spacing-xl);">
         <div class="chart-content">
@@ -87,4 +73,19 @@ $pageTitle = $pageTitle ?? 'Gestion des Absences';
             </div>
         </div>
     </div>
+    <!-- Header -->
+    <div class="dashboard-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <h1>Gestion des Absences</h1>
+            </div>
+            <div class="nav-right">
+                <a href="/hr/request-absence" class="nav-btn btn-primary">
+                    <i class="fas fa-plus"></i> Nouvelle Absence
+                </a>
+            </div>
+        </div>
+    </div>
+
+
 </div>

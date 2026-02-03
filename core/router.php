@@ -207,6 +207,20 @@ function handleHR()
     // Parse HR routes
     if (preg_match('#^/hr/dashboard$#', $path)) {
         $controller->dashboard();
+    } elseif (preg_match('#^/hr/payroll/(\d+)/delete$#', $path, $matches)) {
+        $controller->deletePayroll($matches[1]);
+    } elseif (preg_match('#^/hr/payroll/(\d+)/edit$#', $path, $matches)) {
+        $controller->editPayroll($matches[1]);
+    } elseif (preg_match('#^/hr/payroll/create$#', $path)) {
+        $controller->editPayroll();
+    } elseif (preg_match('#^/hr/payroll$#', $path)) {
+        $controller->payroll();
+    } elseif (preg_match('#^/hr/absence/(\d+)/edit$#', $path, $matches)) {
+        $controller->editAbsence($matches[1]);
+    } elseif (preg_match('#^/hr/absence/(\d+)/approve$#', $path, $matches)) {
+        $controller->approveAbsence($matches[1]);
+    } elseif (preg_match('#^/hr/absence/(\d+)/reject$#', $path, $matches)) {
+        $controller->rejectAbsence($matches[1]);
     } elseif (preg_match('#^/hr/absences/(\d+)/approve$#', $path, $matches) && $method === 'POST') {
         $controller->approveAbsence($matches[1]);
     } elseif (preg_match('#^/hr/absences/(\d+)/reject$#', $path, $matches) && $method === 'POST') {

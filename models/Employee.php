@@ -2,7 +2,7 @@
 
 class Employee extends Model
 {
-    protected $table = 'employees';
+    protected $table = 'employes';
     protected $fillable = [
         'user_id',
         'first_name',

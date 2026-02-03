@@ -1,0 +1,18 @@
+{
+    "name": "crud-asbl-ong/system",
+    "description": "CRUD System for ASBL/ONG Management",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "fakerphp/faker": "^1.23"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "classmap": [
+            "models/",
+            "controllers/"
+        ]
+    }
+}

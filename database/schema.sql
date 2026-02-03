@@ -314,3 +314,24 @@ CREATE TABLE audit_trail (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (utilisateur_id) REFERENCES users(id) ON DELETE SET NULL
 );
+
+-- Fiches de Paie (Payroll)
+CREATE TABLE fiches_paie (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employe_id INT NOT NULL,
+    mois DATE NOT NULL,
+    salaire_base DECIMAL(10, 2) NOT NULL,
+    prime DECIMAL(10, 2) DEFAULT 0,
+    gratification DECIMAL(10, 2) DEFAULT 0,
+    cotisation_sociale DECIMAL(10, 2) NOT NULL,
+    impot_revenu DECIMAL(10, 2) DEFAULT 0,
+    autres_retenues DECIMAL(10, 2) DEFAULT 0,
+    salaire_net DECIMAL(10, 2) NOT NULL,
+    statut ENUM('brouillon', 'valide', 'paye', 'modifie') DEFAULT 'brouillon',
+    date_paiement DATE,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (employe_id) REFERENCES employes(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_employe_month (employe_id, mois)
+);

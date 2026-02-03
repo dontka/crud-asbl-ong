@@ -32,12 +32,12 @@ class HRController extends Controller
         try {
             // Get statistics
             $employee = new Employee();
-            $allEmployees = $employee->findAll(['employment_status' => 'active']);
+            $allEmployees = $employee->findAll(['status' => 'active']);
             $totalEmployees = count($allEmployees);
 
             // Get employees on leave today
             $absence = new Absence();
-            $allAbsences = $absence->findAll(['status' => 'approved']);
+            $allAbsences = $absence->findAll(['status' => 'valide']);
             $today = date('Y-m-d');
             $onLeaveToday = 0;
             $pendingApprovals = 0;
@@ -47,14 +47,14 @@ class HRController extends Controller
                 if ($abs['start_date'] <= $today && $abs['end_date'] >= $today) {
                     $onLeaveToday++;
                 }
-                if ($abs['status'] === 'pending') {
+                if ($abs['status'] === 'demande') {
                     $pendingApprovals++;
                 }
                 $recentAbsences[] = $abs;
             }
 
             // Get pending absences count
-            $pendingAbsencesAll = $absence->findAll(['status' => 'pending']);
+            $pendingAbsencesAll = $absence->findAll(['status' => 'demande']);
             $pendingApprovals = count($pendingAbsencesAll);
 
             // Limit recent absences
@@ -65,13 +65,8 @@ class HRController extends Controller
             $allEvaluations = $evaluation->findAll();
             $upcomingEvaluations = count($allEvaluations); // Simplified
 
-            // Get departments (from employees)
+            // Get departments (simplified - no department column)
             $departments = [];
-            foreach ($allEmployees as $emp) {
-                if (!empty($emp['department']) && !in_array($emp['department'], $departments)) {
-                    $departments[] = $emp['department'];
-                }
-            }
 
             return $this->renderPage('hr/dashboard', [
                 'totalEmployees' => $totalEmployees,
@@ -98,14 +93,9 @@ class HRController extends Controller
             $department = $_GET['department'] ?? null;
             $search = $_GET['search'] ?? null;
 
-            $conditions = [];
-            if ($department) {
-                $conditions['department'] = $department;
-            }
-
-            // Get employees
+            // Get employees (no department filtering - column doesn't exist)
             $employee = new Employee();
-            $allEmployees = $employee->findAll($conditions);
+            $allEmployees = $employee->findAll();
 
             // Filter by search if provided
             if ($search) {
@@ -114,16 +104,28 @@ class HRController extends Controller
                     return stripos($emp['first_name'] ?? '', $search) !== false ||
                         stripos($emp['last_name'] ?? '', $search) !== false ||
                         stripos($emp['email'] ?? '', $search) !== false ||
-                        stripos($emp['employee_number'] ?? '', $search) !== false;
+                        stripos($emp['phone'] ?? '', $search) !== false;
                 });
+            }
+
+            // Convert to objects for view compatibility
+            $employeesData = [];
+            foreach ($allEmployees as $emp) {
+                $obj = (object) $emp;
+                $obj->position = 'N/A'; // No position column in database
+                $obj->department = 'N/A'; // No department column in database
+                $employeesData[] = $obj;
             }
 
             // Simple pagination
             $limit = 15;
-            $total = count($allEmployees);
+            $total = count($employeesData);
             $totalPages = ceil($total / $limit);
             $offset = ($page - 1) * $limit;
-            $employees = array_slice($allEmployees, $offset, $limit);
+            $employees = (object) ['data' => array_slice($employeesData, $offset, $limit)];
+
+            // Get departments list (empty for now - no department column)
+            $departments = [];
 
             return $this->renderPage('hr/employees/index', [
                 'employees' => $employees,
@@ -131,6 +133,7 @@ class HRController extends Controller
                 'totalPages' => $totalPages,
                 'department' => $department,
                 'search' => $search,
+                'departments' => $departments,
                 'pageTitle' => 'Gestion des Employés'
             ]);
         } catch (\Exception $e) {
@@ -321,12 +324,20 @@ class HRController extends Controller
             // Enrich absences with employee data
             $employee = new Employee();
             foreach ($absences as &$absence_data) {
-                if (!empty($absence_data['employee_id'])) {
-                    $emp = $employee->findById($absence_data['employee_id']);
+                // Handle both employe_id and employee_id column names for compatibility
+                $empId = $absence_data['employe_id'] ?? $absence_data['employee_id'] ?? null;
+                if (!empty($empId)) {
+                    $emp = $employee->findById($empId);
                     $absence_data['employee_name'] = ($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? '');
                 } else {
                     $absence_data['employee_name'] = 'N/A';
                 }
+
+                // Map type to absence_type for view compatibility
+                $absence_data['absence_type'] = $this->mapAbsenceType($absence_data['type'] ?? 'conge');
+
+                // Map status values for view compatibility
+                $absence_data['status'] = $this->mapAbsenceStatus($absence_data['status'] ?? 'demande');
             }
 
             return $this->renderPage('hr/absences/index', [
@@ -337,6 +348,32 @@ class HRController extends Controller
             $this->setFlash('error', 'Erreur: ' . $e->getMessage());
             return $this->redirect('/dashboard');
         }
+    }
+
+    /**
+     * Map absence type from database values to display values
+     */
+    private function mapAbsenceType($type)
+    {
+        $mapping = [
+            'conge' => 'Congé',
+            'maladie' => 'Maladie',
+            'autre' => 'Autre',
+        ];
+        return $mapping[$type] ?? $type;
+    }
+
+    /**
+     * Map absence status from database values to display values
+     */
+    private function mapAbsenceStatus($status)
+    {
+        $mapping = [
+            'demande' => 'pending',
+            'valide' => 'approved',
+            'refuse' => 'rejected',
+        ];
+        return $mapping[$status] ?? $status;
     }
 
     /**
@@ -364,6 +401,56 @@ class HRController extends Controller
     }
 
     /**
+     * Edit absence
+     */
+    public function editAbsence($id)
+    {
+        try {
+            $absence = new Absence();
+            $abs = $absence->findById($id);
+
+            if (!$abs) {
+                $this->setFlash('error', 'Absence non trouvée');
+                return $this->redirect('/hr/absences');
+            }
+
+            // Handle form submission
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $data = [
+                    'id' => $id,
+                    'employe_id' => $_POST['employe_id'] ?? $abs['employe_id'],
+                    'type' => $_POST['type'] ?? $abs['type'],
+                    'start_date' => $_POST['start_date'] ?? $abs['start_date'],
+                    'end_date' => $_POST['end_date'] ?? $abs['end_date'],
+                    'status' => $_POST['status'] ?? $abs['status'],
+                ];
+
+                if ($absence->save($data)) {
+                    $this->setFlash('success', 'Absence mise à jour');
+                    return $this->redirect('/hr/absences');
+                } else {
+                    $this->setFlash('error', 'Erreur lors de la mise à jour');
+                }
+            }
+
+            // Get employees for dropdown
+            $employee = new Employee();
+            $employees = $employee->findAll();
+
+            return $this->renderPage('hr/absences/edit', [
+                'absence' => $abs,
+                'employees' => $employees,
+                'absenceTypes' => ['conge' => 'Congé', 'maladie' => 'Maladie', 'autre' => 'Autre'],
+                'statuses' => ['demande' => 'Demande', 'valide' => 'Validée', 'refuse' => 'Refusée'],
+                'pageTitle' => 'Édition de l\'Absence'
+            ]);
+        } catch (\Exception $e) {
+            $this->setFlash('error', 'Erreur: ' . $e->getMessage());
+            return $this->redirect('/hr/absences');
+        }
+    }
+
+    /**
      * Approve absence
      */
     public function approveAbsence($id)
@@ -377,17 +464,18 @@ class HRController extends Controller
                 return $this->redirect('/hr/absences');
             }
 
-            // Mark as approved
-            $abs['status'] = 'approved';
-            $abs['approved_by'] = $_SESSION['user']['id'] ?? null;
-            $abs['approval_date'] = date('Y-m-d H:i:s');
-            $absence->save($abs);
+            // Mark as approved (valide in French)
+            $absData = is_array($abs) ? $abs : (array) $abs;
+            $absData['status'] = 'valide';
+            $absData['approval_date'] = date('Y-m-d H:i:s');
+
+            $absence->save($absData);
 
             $this->setFlash('success', 'Absence approuvée');
             return $this->redirect('/hr/absences');
         } catch (\Exception $e) {
             $this->setFlash('error', 'Erreur: ' . $e->getMessage());
-            return $this->redirect('/hr/absences/' . $id);
+            return $this->redirect('/hr/absences');
         }
     }
 
@@ -405,16 +493,17 @@ class HRController extends Controller
                 return $this->redirect('/hr/absences');
             }
 
-            // Mark as rejected
-            $abs['status'] = 'rejected';
-            $abs['approved_by'] = $_SESSION['user']['id'] ?? null;
-            $absence->save($abs);
+            // Mark as rejected (refuse in French)
+            $absData = is_array($abs) ? $abs : (array) $abs;
+            $absData['status'] = 'refuse';
+
+            $absence->save($absData);
 
             $this->setFlash('success', 'Absence rejetée');
             return $this->redirect('/hr/absences');
         } catch (\Exception $e) {
             $this->setFlash('error', 'Erreur: ' . $e->getMessage());
-            return $this->redirect('/hr/absences/' . $id);
+            return $this->redirect('/hr/absences');
         }
     }
 
@@ -510,8 +599,14 @@ class HRController extends Controller
             // Enrich contracts with employee data
             $employee = new Employee();
             foreach ($contracts as &$contract_data) {
-                if (!empty($contract_data['employee_id'])) {
-                    $emp = $employee->findById($contract_data['employee_id']);
+                // Map column names for compatibility
+                if (isset($contract_data['type']) && !isset($contract_data['contract_type'])) {
+                    $contract_data['contract_type'] = $contract_data['type'];
+                }
+
+                $emp_id = $contract_data['employe_id'] ?? $contract_data['employee_id'] ?? null;
+                if (!empty($emp_id)) {
+                    $emp = $employee->findById($emp_id);
                     $contract_data['employee_name'] = ($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? '');
                 } else {
                     $contract_data['employee_name'] = 'N/A';
@@ -631,7 +726,7 @@ class HRController extends Controller
             $employee = new Employee();
             $employees = $employee->findAll(['employment_status' => 'active']);
 
-            return $this->renderPage('hr/contracts/edit', [
+            return $this->renderPage('hr/contracts/create', [
                 'contract' => $contract_data,
                 'employees' => $employees,
                 'pageTitle' => 'Éditer le Contrat'
@@ -745,6 +840,148 @@ class HRController extends Controller
         } catch (\Exception $e) {
             $this->setFlash('error', 'Erreur: ' . $e->getMessage());
             return $this->redirect('/hr/contracts');
+        }
+    }
+
+    /**
+     * Display Payroll Dashboard with CRUD operations
+     */
+    public function payroll()
+    {
+        try {
+            $payroll = new Payroll();
+            $employee = new Employee();
+            
+            $currentMonth = $_GET['month'] ?? date('Y-m');
+            $action = $_GET['action'] ?? 'list';
+            
+            // Handle AJAX generate payroll
+            if ($action === 'generate' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+                $generated = $payroll->generatePayrollForMonth($currentMonth . '-01');
+                $this->setFlash('success', "$generated fiches de paie générées pour $currentMonth");
+                return $this->redirect('/hr/payroll?month=' . $currentMonth);
+            }
+            
+            // Get payroll data
+            $payrolls = $payroll->findAll();
+            $stats = $payroll->getStatistics();
+            
+            // Filter by month
+            $monthPayrolls = array_filter($payrolls, function($p) use ($currentMonth) {
+                return substr($p['mois'], 0, 7) === $currentMonth;
+            });
+            
+            // Enrich with employee data
+            foreach ($monthPayrolls as &$p) {
+                $emp = $employee->findById($p['employe_id']);
+                $p['employee_name'] = ($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? '');
+                $p['employee_email'] = $emp['email'] ?? '';
+            }
+
+            return $this->renderPage('hr/payroll', [
+                'payrolls' => $monthPayrolls,
+                'stats' => $stats,
+                'currentMonth' => $currentMonth,
+                'allPayrolls' => $payrolls,
+                'pageTitle' => 'Gestion de la Paie'
+            ]);
+        } catch (\Exception $e) {
+            $this->setFlash('error', 'Erreur: ' . $e->getMessage());
+            return $this->redirect('/dashboard');
+        }
+    }
+
+    /**
+     * Create or edit payroll
+     */
+    public function editPayroll($id = null)
+    {
+        try {
+            $payroll = new Payroll();
+            $employee = new Employee();
+            
+            $payrollData = null;
+            if ($id) {
+                $payrollData = $payroll->findById($id);
+                if (!$payrollData) {
+                    $this->setFlash('error', 'Fiche de paie non trouvée');
+                    return $this->redirect('/hr/payroll');
+                }
+            }
+            
+            // Handle form submission
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $salaire_base = floatval($_POST['salaire_base'] ?? 0);
+                $prime = floatval($_POST['prime'] ?? 0);
+                $gratification = floatval($_POST['gratification'] ?? 0);
+                $cotisation = floatval($_POST['cotisation_sociale'] ?? Payroll::calculateCotisation($salaire_base));
+                $impot = floatval($_POST['impot_revenu'] ?? 0);
+                $autres = floatval($_POST['autres_retenues'] ?? 0);
+                $net = Payroll::calculateNetSalary($salaire_base, $prime, $gratification, $cotisation, $impot, $autres);
+                
+                $data = [
+                    'employe_id' => $_POST['employe_id'] ?? ($payrollData['employe_id'] ?? null),
+                    'mois' => $_POST['mois'] ?? ($payrollData['mois'] ?? date('Y-m-01')),
+                    'salaire_base' => $salaire_base,
+                    'prime' => $prime,
+                    'gratification' => $gratification,
+                    'cotisation_sociale' => $cotisation,
+                    'impot_revenu' => $impot,
+                    'autres_retenues' => $autres,
+                    'salaire_net' => $net,
+                    'statut' => $_POST['statut'] ?? ($payrollData['statut'] ?? 'brouillon'),
+                    'date_paiement' => $_POST['date_paiement'] ?? ($payrollData['date_paiement'] ?? null),
+                    'notes' => $_POST['notes'] ?? ''
+                ];
+                
+                if ($id) {
+                    $data['id'] = $id;
+                    $payroll->save($data);
+                    $this->setFlash('success', 'Fiche de paie mise à jour');
+                } else {
+                    $payroll->insert($data);
+                    $this->setFlash('success', 'Fiche de paie créée');
+                }
+                return $this->redirect('/hr/payroll');
+            }
+            
+            $employees = $employee->findAll();
+            
+            return $this->renderPage('hr/payroll-edit', [
+                'payroll' => $payrollData,
+                'employees' => $employees,
+                'pageTitle' => $id ? 'Éditer Fiche de Paie' : 'Créer Fiche de Paie'
+            ]);
+        } catch (\Exception $e) {
+            $this->setFlash('error', 'Erreur: ' . $e->getMessage());
+            return $this->redirect('/hr/payroll');
+        }
+    }
+
+    /**
+     * Delete payroll
+     */
+    public function deletePayroll($id)
+    {
+        try {
+            $payroll = new Payroll();
+            $payrollData = $payroll->findById($id);
+            
+            if (!$payrollData) {
+                $this->setFlash('error', 'Fiche de paie non trouvée');
+                return $this->redirect('/hr/payroll');
+            }
+            
+            // Delete using raw query
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("DELETE FROM fiches_paie WHERE id = ?");
+            $stmt->execute([$id]);
+            
+            $this->setFlash('success', 'Fiche de paie supprimée');
+            return $this->redirect('/hr/payroll');
+        } catch (\Exception $e) {
+            $this->setFlash('error', 'Erreur: ' . $e->getMessage());
+            return $this->redirect('/hr/payroll');
         }
     }
 }
