@@ -79,7 +79,7 @@ class UserController extends Controller
         $user = $this->getCurrentUser();
         $flash = $this->getFlash();
 
-        $this->renderContent('users/profile', [
+        $this->renderPage('users/profile', [
             'user' => $user,
             'flash' => $flash
         ]);
@@ -131,7 +131,7 @@ class UserController extends Controller
         $users = $this->userModel->findAll([], 'username ASC');
         $flash = $this->getFlash();
 
-        $this->renderContent('users/index', [
+        $this->renderPage('users/index', [
             'users' => $users,
             'flash' => $flash
         ]);
@@ -145,7 +145,7 @@ class UserController extends Controller
         $this->requireRole('admin');
         $flash = $this->getFlash();
 
-        $this->renderContent('users/create', [
+        $this->renderPage('users/create', [
             'flash' => $flash
         ]);
     }
@@ -196,7 +196,7 @@ class UserController extends Controller
 
         $flash = $this->getFlash();
 
-        $this->renderContent('users/edit', [
+        $this->renderPage('users/edit', [
             'user' => $user,
             'flash' => $flash
         ]);

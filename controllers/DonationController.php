@@ -37,7 +37,7 @@ class DonationController extends Controller
 
         $flash = $this->getFlash();
 
-        $this->renderContent('donations/index', [
+        $this->renderPage('donations/index', [
             'donations' => $donations,
             'project_id' => $project_id,
             'total_amount' => $total_amount,
@@ -58,7 +58,7 @@ class DonationController extends Controller
         $projectModel = new Project();
         $projects = $projectModel->findAll([], 'name ASC');
 
-        $this->renderContent('donations/create', [
+        $this->renderPage('donations/create', [
             'flash' => $flash,
             'projects' => $projects
         ]);
@@ -113,7 +113,7 @@ class DonationController extends Controller
 
         $flash = $this->getFlash();
 
-        $this->renderContent('donations/show', [
+        $this->renderPage('donations/show', [
             'donation' => $donation,
             'flash' => $flash
         ]);
@@ -143,7 +143,7 @@ class DonationController extends Controller
         $projectModel = new Project();
         $projects = $projectModel->findAll([], 'name ASC');
 
-        $this->renderContent('donations/edit', [
+        $this->renderPage('donations/edit', [
             'donation' => $donation,
             'flash' => $flash,
             'projects' => $projects

@@ -32,7 +32,7 @@ class ProjectController extends Controller
         $projects = $this->projectModel->findAll($conditions, 'name ASC');
         $flash = $this->getFlash();
 
-        $this->renderContent('projects/index', [
+        $this->renderPage('projects/index', [
             'projects' => $projects,
             'status' => $status,
             'flash' => $flash
@@ -47,7 +47,7 @@ class ProjectController extends Controller
         $this->requireAuth();
         $flash = $this->getFlash();
 
-        $this->renderContent('projects/create', [
+        $this->renderPage('projects/create', [
             'flash' => $flash
         ]);
     }
@@ -101,7 +101,7 @@ class ProjectController extends Controller
 
         $flash = $this->getFlash();
 
-        $this->renderContent('projects/show', [
+        $this->renderPage('projects/show', [
             'project' => $project,
             'flash' => $flash
         ]);
@@ -127,7 +127,7 @@ class ProjectController extends Controller
 
         $flash = $this->getFlash();
 
-        $this->renderContent('projects/edit', [
+        $this->renderPage('projects/edit', [
             'project' => $project,
             'flash' => $flash
         ]);

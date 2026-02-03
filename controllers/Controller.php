@@ -167,6 +167,38 @@ abstract class Controller
     }
 
     /**
+     * Render with full layout (header, sidebar, content, footer)
+     * @param string $view
+     * @param array $data
+     * @param string $pageTitle
+     */
+    protected function renderPage($view, $data = [], $pageTitle = '')
+    {
+        // Extract data to variables
+        extract($data);
+
+        // Get flash message if available
+        $flash = $this->getFlash();
+
+        // Include header
+        include VIEWS_PATH . 'header.php';
+
+        // Include sidebar
+        include VIEWS_PATH . 'sidebar.php';
+
+        // Include the main content
+        $viewPath = VIEWS_PATH . $view . '.php';
+        if (file_exists($viewPath)) {
+            include $viewPath;
+        } else {
+            echo "<p>View not found: {$view}</p>";
+        }
+
+        // Include footer
+        include VIEWS_PATH . 'footer.php';
+    }
+
+    /**
      * Handle validation errors
      * @param Exception $e
      */

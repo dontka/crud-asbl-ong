@@ -32,7 +32,7 @@ class EventController extends Controller
         $events = $this->eventModel->findAll($conditions, 'event_date DESC');
         $flash = $this->getFlash();
 
-        $this->renderContent('events/index', [
+        $this->renderPage('events/index', [
             'events' => $events,
             'status' => $status,
             'flash' => $flash
@@ -51,7 +51,7 @@ class EventController extends Controller
         $userModel = new User();
         $organizers = $userModel->findAll([], 'username ASC');
 
-        $this->renderContent('events/create', [
+        $this->renderPage('events/create', [
             'flash' => $flash,
             'organizers' => $organizers
         ]);
@@ -106,7 +106,7 @@ class EventController extends Controller
 
         $flash = $this->getFlash();
 
-        $this->renderContent('events/show', [
+        $this->renderPage('events/show', [
             'event' => $event,
             'flash' => $flash
         ]);
@@ -136,7 +136,7 @@ class EventController extends Controller
         $userModel = new User();
         $organizers = $userModel->findAll([], 'username ASC');
 
-        $this->renderContent('events/edit', [
+        $this->renderPage('events/edit', [
             'event' => $event,
             'flash' => $flash,
             'organizers' => $organizers
