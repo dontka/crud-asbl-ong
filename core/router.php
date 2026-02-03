@@ -50,6 +50,9 @@ try {
         case 'search':
             handleSearch();
             break;
+        case 'seed':
+            handleSeed();
+            break;
         case 'hr':
             handleHR();
             break;
@@ -224,7 +227,7 @@ function handleHR()
     } elseif (preg_match('#^/hr/contract/(\d+)/delete$#', $path, $matches)) {
         $controller->deleteContract($matches[1]);
     } elseif (preg_match('#^/hr/contract/(\d+)/edit$#', $path, $matches)) {
-        $controller->editContract($matches[1]);
+        $controller->createContract($matches[1]);
     } elseif (preg_match('#^/hr/contract/(\d+)$#', $path, $matches) && $method === 'PUT') {
         $controller->updateContract($matches[1]);
     } elseif (preg_match('#^/hr/contract/(\d+)$#', $path, $matches)) {
@@ -249,6 +252,29 @@ function handleHR()
         $controller->store();
     } elseif (preg_match('#^/hr/?$#', $path)) {
         $controller->dashboard();
+    } else {
+        $controller->index();
+    }
+}
+
+/**
+ * Gère les routes de seeding (données fictives)
+ */
+function handleSeed()
+{
+    require_once __DIR__ . '/../controllers/SeedController.php';
+    $controller = new SeedController();
+
+    // Get request path and method
+    $requestUri = $_SERVER['REQUEST_URI'];
+    $path = parse_url($requestUri, PHP_URL_PATH);
+    $method = $_SERVER['REQUEST_METHOD'];
+
+    // Parse seed routes
+    if (preg_match('#^/seed/generate$#', $path) && $method === 'POST') {
+        echo $controller->generateData();
+    } elseif (preg_match('#^/seed/?$#', $path)) {
+        $controller->index();
     } else {
         $controller->index();
     }

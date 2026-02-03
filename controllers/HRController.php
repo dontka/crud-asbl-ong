@@ -548,17 +548,32 @@ class HRController extends Controller
     }
 
     /**
-     * Create new contract
+     * Create or edit contract view
      */
-    public function createContract()
+    public function createContract($id = null)
     {
         try {
             $employee = new Employee();
             $employees = $employee->findAll(['employment_status' => 'active']);
+            $contract = null;
+            $pageTitle = 'Créer un Nouveau Contrat';
+
+            // Si un ID est fourni, on charge le contrat pour l'édition
+            if ($id) {
+                $contractModel = new Contract();
+                $contract = $contractModel->findById($id);
+
+                if (!$contract) {
+                    $this->setFlash('error', 'Contrat non trouvé');
+                    return $this->redirect('/hr/contracts');
+                }
+                $pageTitle = 'Éditer le Contrat';
+            }
 
             return $this->renderPage('hr/contracts/create', [
                 'employees' => $employees,
-                'pageTitle' => 'Créer un Nouveau Contrat'
+                'contract' => $contract,
+                'pageTitle' => $pageTitle
             ]);
         } catch (\Exception $e) {
             $this->setFlash('error', 'Erreur: ' . $e->getMessage());
@@ -567,7 +582,7 @@ class HRController extends Controller
     }
 
     /**
-     * Store new contract
+     * Store contract (create or update)
      */
     public function storeContract()
     {
@@ -602,43 +617,24 @@ class HRController extends Controller
                 }
             }
 
-            // Save contract
-            $contract = new Contract();
-            $result = $contract->save($data);
+            // Check if this is an update (contract_id is provided)
+            $contractId = $_POST['contract_id'] ?? null;
 
-            $this->setFlash('success', 'Contrat créé avec succès');
+            // Save or update contract
+            $contract = new Contract();
+            if ($contractId) {
+                $data['id'] = $contractId;
+                $result = $contract->save($data);
+                $this->setFlash('success', 'Contrat mis à jour avec succès');
+            } else {
+                $result = $contract->save($data);
+                $this->setFlash('success', 'Contrat créé avec succès');
+            }
+
             return $this->redirect('/hr/contracts');
         } catch (\Exception $e) {
             $this->setFlash('error', 'Erreur: ' . $e->getMessage());
             return $this->redirect('/hr/create-contract');
-        }
-    }
-
-    /**
-     * Edit contract
-     */
-    public function editContract($id)
-    {
-        try {
-            $contract = new Contract();
-            $contract_data = $contract->findById($id);
-
-            if (!$contract_data) {
-                $this->setFlash('error', 'Contrat non trouvé');
-                return $this->redirect('/hr/contracts');
-            }
-
-            $employee = new Employee();
-            $employees = $employee->findAll(['employment_status' => 'active']);
-
-            return $this->renderPage('hr/contracts/edit', [
-                'contract' => $contract_data,
-                'employees' => $employees,
-                'pageTitle' => 'Éditer le Contrat'
-            ]);
-        } catch (\Exception $e) {
-            $this->setFlash('error', 'Erreur: ' . $e->getMessage());
-            return $this->redirect('/hr/contracts');
         }
     }
 
