@@ -177,6 +177,9 @@ abstract class Controller
         // Extract data to variables
         extract($data);
 
+        // Get flash message if available
+        $flash = $this->getFlash();
+
         // Include header
         include VIEWS_PATH . 'header.php';
 

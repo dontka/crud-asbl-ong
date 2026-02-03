@@ -61,7 +61,7 @@
                     <i class="fas fa-chevron-right toggle-icon"></i>
                 </button>
                 <ul class="sidebar-submenu-items" id="hr-menu" style="display: none;">
-                    <li><a href="<?php echo BASE_URL; ?>/hr/employees" class="sidebar-link-sub">
+                    <li><a href="<?php echo BASE_URL; ?>/hr" class="sidebar-link-sub">
                             <i class="fas fa-id-card"></i> Dossiers Salariés
                         </a></li>
                     <li><a href="<?php echo BASE_URL; ?>/hr/contracts" class="sidebar-link-sub">
@@ -82,8 +82,8 @@
                     <li><a href="<?php echo BASE_URL; ?>/hr/evaluations" class="sidebar-link-sub">
                             <i class="fas fa-chart-line"></i> Évaluations
                         </a></li>
-                    <li><a href="<?php echo BASE_URL; ?>/hr/employee-portal" class="sidebar-link-sub">
-                            <i class="fas fa-sign-in-alt"></i> Portail Salarié
+                    <li><a href="<?php echo BASE_URL; ?>/hr/dashboard" class="sidebar-link-sub">
+                            <i class="fas fa-th-large"></i> Tableau de Bord RH
                         </a></li>
                 </ul>
             </div>

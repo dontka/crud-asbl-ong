@@ -50,6 +50,9 @@ try {
         case 'search':
             handleSearch();
             break;
+        case 'hr':
+            handleHR();
+            break;
         default:
             // Default to dashboard if authenticated, login if not
             if (isAuthenticated()) {
@@ -189,4 +192,64 @@ function handleSearch()
     require_once __DIR__ . '/../controllers/SearchController.php';
     $controller = new SearchController();
     $controller->index();
+}
+
+function handleHR()
+{
+    require_once __DIR__ . '/../controllers/HRController.php';
+    $controller = new HRController();
+
+    // Get request path and method
+    $requestUri = $_SERVER['REQUEST_URI'];
+    $path = parse_url($requestUri, PHP_URL_PATH);
+    $method = $_SERVER['REQUEST_METHOD'];
+
+    // Parse HR routes
+    if (preg_match('#^/hr/dashboard$#', $path)) {
+        $controller->dashboard();
+    } elseif (preg_match('#^/hr/absences/(\d+)/approve$#', $path, $matches) && $method === 'POST') {
+        $controller->approveAbsence($matches[1]);
+    } elseif (preg_match('#^/hr/absences/(\d+)/reject$#', $path, $matches) && $method === 'POST') {
+        $controller->rejectAbsence($matches[1]);
+    } elseif (preg_match('#^/hr/absences/(\d+)$#', $path, $matches)) {
+        $controller->showAbsence($matches[1]);
+    } elseif (preg_match('#^/hr/absences$#', $path)) {
+        $controller->absences();
+    } elseif (preg_match('#^/hr/evaluations/(\d+)/create$#', $path, $matches)) {
+        $controller->createEvaluation($matches[1]);
+    } elseif (preg_match('#^/hr/evaluations$#', $path) && $method === 'POST') {
+        $controller->storeEvaluation();
+    } elseif (preg_match('#^/hr/evaluations$#', $path)) {
+        $controller->evaluations();
+    } elseif (preg_match('#^/hr/contract/(\d+)/delete$#', $path, $matches)) {
+        $controller->deleteContract($matches[1]);
+    } elseif (preg_match('#^/hr/contract/(\d+)/edit$#', $path, $matches)) {
+        $controller->editContract($matches[1]);
+    } elseif (preg_match('#^/hr/contract/(\d+)$#', $path, $matches) && $method === 'PUT') {
+        $controller->updateContract($matches[1]);
+    } elseif (preg_match('#^/hr/contract/(\d+)$#', $path, $matches)) {
+        $controller->showContract($matches[1]);
+    } elseif (preg_match('#^/hr/create-contract$#', $path)) {
+        $controller->createContract();
+    } elseif (preg_match('#^/hr/store-contract$#', $path) && $method === 'POST') {
+        $controller->storeContract();
+    } elseif (preg_match('#^/hr/contracts$#', $path)) {
+        $controller->contracts();
+    } elseif (preg_match('#^/hr/trainings$#', $path)) {
+        $controller->trainings();
+    } elseif (preg_match('#^/hr/(\d+)/edit$#', $path, $matches)) {
+        $controller->edit($matches[1]);
+    } elseif (preg_match('#^/hr/(\d+)$#', $path, $matches) && $method === 'PUT') {
+        $controller->update($matches[1]);
+    } elseif (preg_match('#^/hr/(\d+)$#', $path, $matches)) {
+        $controller->show($matches[1]);
+    } elseif (preg_match('#^/hr/create$#', $path)) {
+        $controller->create();
+    } elseif (preg_match('#^/hr/store$#', $path) && $method === 'POST') {
+        $controller->store();
+    } elseif (preg_match('#^/hr/?$#', $path)) {
+        $controller->dashboard();
+    } else {
+        $controller->index();
+    }
 }
