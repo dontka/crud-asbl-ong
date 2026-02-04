@@ -19,7 +19,15 @@ class Skill extends Model
      */
     public static function byCategory($category)
     {
-        return self::where('category', $category);
+        $skill = new self();
+        try {
+            $sql = "SELECT * FROM {$skill->table} WHERE category = ? ORDER BY name";
+            $stmt = $skill->db->prepare($sql);
+            $stmt->execute([$category]);
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            throw new Exception("Unable to fetch skills by category: " . $e->getMessage());
+        }
     }
 
     /**
@@ -27,7 +35,23 @@ class Skill extends Model
      */
     public static function getCategories()
     {
-        return self::distinct()->pluck('category')->filter();
+        $skill = new self();
+        try {
+            $sql = "SELECT DISTINCT category FROM {$skill->table} WHERE category IS NOT NULL AND category != '' ORDER BY category";
+            $stmt = $skill->db->prepare($sql);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            $categories = [];
+            foreach ($results as $row) {
+                if (!empty($row['category'])) {
+                    $categories[] = $row['category'];
+                }
+            }
+            return $categories;
+        } catch (PDOException $e) {
+            throw new Exception("Unable to fetch categories: " . $e->getMessage());
+        }
     }
 
     /**

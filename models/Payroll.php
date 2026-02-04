@@ -2,19 +2,22 @@
 
 class Payroll extends Model
 {
-    protected $table = 'fiches_paie';
+    protected $table = 'payroll';
     protected $fillable = [
-        'employe_id',
-        'mois',
-        'salaire_base',
-        'prime',
-        'gratification',
-        'cotisation_sociale',
-        'impot_revenu',
-        'autres_retenues',
-        'salaire_net',
-        'statut',
-        'date_paiement',
+        'employee_id',
+        'payroll_month',
+        'payroll_year',
+        'salary_gross',
+        'bonuses',
+        'deductions',
+        'taxes',
+        'social_contributions',
+        'salary_net',
+        'overtime_hours',
+        'overtime_pay',
+        'status',
+        'payment_date',
+        'payment_method',
         'notes'
     ];
 
@@ -24,7 +27,7 @@ class Payroll extends Model
     public function getByEmployeeAndMonth($employeeId, $month)
     {
         try {
-            $sql = "SELECT * FROM {$this->table} WHERE employe_id = ? AND mois = ?";
+            $sql = "SELECT * FROM {$this->table} WHERE employee_id = ? AND payroll_month = ?";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$employeeId, $month]);
             return $stmt->fetch();
@@ -39,39 +42,40 @@ class Payroll extends Model
     public function getByEmployee($employeeId)
     {
         try {
-            return $this->findBy('employe_id', $employeeId, 'mois DESC');
+            return $this->findBy('employee_id', $employeeId, 'payroll_month DESC');
         } catch (PDOException $e) {
             throw new Exception("Unable to fetch payroll: " . $e->getMessage());
         }
     }
 
     /**
-     * Calculate net salary
+     * Calculate net salary based on salary components
      */
-    public static function calculateNetSalary($salaire_base, $prime = 0, $gratification = 0, $cotisation = 0, $impot = 0, $autres = 0)
+    public static function calculateNetSalary($salary_gross, $bonuses = 0, $deductions = 0, $taxes = 0, $social_contributions = 0)
     {
-        $brut = $salaire_base + $prime + $gratification;
-        $net = $brut - $cotisation - $impot - $autres;
+        $total_gross = $salary_gross + $bonuses;
+        $total_deductions = $deductions + $taxes + $social_contributions;
+        $net = $total_gross - $total_deductions;
         return max(0, $net); // Never negative
     }
 
     /**
-     * Calculate cotisation sociale (23.5% for employees)
+     * Calculate social contributions (23.5% for employees)
      */
-    public static function calculateCotisation($salaire_base)
+    public static function calculateSocialContributions($salary_gross)
     {
-        return round($salaire_base * 0.235, 2);
+        return round($salary_gross * 0.235, 2);
     }
 
     /**
      * Calculate income tax (simplified)
      */
-    public static function calculateIncomeTax($salaire_net_before_tax)
+    public static function calculateIncomeTax($salary_net_before_tax)
     {
-        if ($salaire_net_before_tax < 1500) {
+        if ($salary_net_before_tax < 1500) {
             return 0;
         }
-        return round(($salaire_net_before_tax - 1500) * 0.15, 2);
+        return round(($salary_net_before_tax - 1500) * 0.15, 2);
     }
 
     /**
@@ -81,26 +85,25 @@ class Payroll extends Model
     {
         try {
             $sql = "SELECT 
-                        COUNT(DISTINCT employe_id) as total_employees,
+                        COUNT(DISTINCT employee_id) as total_employees,
                         COUNT(*) as total_payrolls,
-                        SUM(salaire_base) as total_salaire_base,
-                        SUM(prime) as total_primes,
-                        SUM(gratification) as total_gratifications,
-                        SUM(cotisation_sociale) as total_cotisations,
-                        SUM(impot_revenu) as total_impots,
-                        SUM(autres_retenues) as total_retenues,
-                        SUM(salaire_net) as total_salaire_net,
-                        AVG(salaire_net) as avg_salaire_net
+                        SUM(salary_gross) as total_salary_gross,
+                        SUM(bonuses) as total_bonuses,
+                        SUM(deductions) as total_deductions,
+                        SUM(taxes) as total_taxes,
+                        SUM(social_contributions) as total_social_contributions,
+                        SUM(salary_net) as total_salary_net,
+                        AVG(salary_net) as avg_salary_net
                     FROM {$this->table}
-                    WHERE statut IN ('valide', 'paye')";
+                    WHERE status IN ('draft', 'validated', 'paid')";
 
             $params = [];
             if ($startMonth) {
-                $sql .= " AND mois >= ?";
+                $sql .= " AND payroll_month >= ?";
                 $params[] = $startMonth;
             }
             if ($endMonth) {
-                $sql .= " AND mois <= ?";
+                $sql .= " AND payroll_month <= ?";
                 $params[] = $endMonth;
             }
 
@@ -115,11 +118,15 @@ class Payroll extends Model
     /**
      * Generate payroll for all active employees for a given month
      */
-    public function generatePayrollForMonth($month)
+    public function generatePayrollForMonth($dateStr)
     {
         try {
+            $date = new DateTime($dateStr);
+            $month = intval($date->format('m'));
+            $year = intval($date->format('Y'));
+            
             $employee = new Employee();
-            $employees = $employee->findAll(['status' => 'active']);
+            $employees = $employee->findAll();
             $generated = 0;
 
             foreach ($employees as $emp) {
@@ -127,23 +134,25 @@ class Payroll extends Model
                 $existing = $this->getByEmployeeAndMonth($emp['id'], $month);
                 if (!$existing) {
                     // Simulate salary (in real app, would come from contract)
-                    $salary = rand(2000, 4500);
-                    $cotisation = self::calculateCotisation($salary);
-                    $net_before_tax = $salary - $cotisation;
-                    $impot = self::calculateIncomeTax($net_before_tax);
-                    $net = self::calculateNetSalary($salary, 0, 0, $cotisation, $impot, 0);
+                    $salary_gross = rand(2000, 4500);
+                    $social_contributions = self::calculateSocialContributions($salary_gross);
+                    $net_before_tax = $salary_gross - $social_contributions;
+                    $taxes = self::calculateIncomeTax($net_before_tax);
+                    $salary_net = self::calculateNetSalary($salary_gross, 0, 0, $taxes, $social_contributions);
 
                     $data = [
-                        'employe_id' => $emp['id'],
-                        'mois' => $month,
-                        'salaire_base' => $salary,
-                        'prime' => 0,
-                        'gratification' => 0,
-                        'cotisation_sociale' => $cotisation,
-                        'impot_revenu' => $impot,
-                        'autres_retenues' => 0,
-                        'salaire_net' => $net,
-                        'statut' => 'brouillon'
+                        'employee_id' => $emp['id'],
+                        'payroll_month' => $month,
+                        'payroll_year' => $year,
+                        'salary_gross' => $salary_gross,
+                        'bonuses' => 0,
+                        'deductions' => 0,
+                        'taxes' => $taxes,
+                        'social_contributions' => $social_contributions,
+                        'salary_net' => $salary_net,
+                        'status' => 'draft',
+                        'payment_method' => 'bank_transfer',
+                        'notes' => 'Auto-generated'
                     ];
 
                     $this->insert($data);
@@ -155,5 +164,35 @@ class Payroll extends Model
         } catch (Exception $e) {
             throw new Exception("Unable to generate payroll: " . $e->getMessage());
         }
+    }
+
+    /**
+     * Validate payroll data
+     */
+    public function validate($data)
+    {
+        $errors = [];
+        
+        if (empty($data['employee_id'])) {
+            $errors['employee_id'] = 'Employee ID is required';
+        }
+        
+        if (empty($data['payroll_month'])) {
+            $errors['payroll_month'] = 'Month is required';
+        }
+        
+        if (!isset($data['salary_gross']) || $data['salary_gross'] < 0) {
+            $errors['salary_gross'] = 'Gross salary must be a positive number';
+        }
+        
+        if (!isset($data['salary_net']) || $data['salary_net'] < 0) {
+            $errors['salary_net'] = 'Net salary must be a positive number';
+        }
+        
+        if (empty($data['status'])) {
+            $errors['status'] = 'Status is required';
+        }
+        
+        return $errors;
     }
 }

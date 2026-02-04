@@ -196,6 +196,22 @@ function handleSearch()
 
 function handleHR()
 {
+    // Check HR access before instantiating controller
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    $allowedRoles = ['admin', 'moderator', 'hr_manager', 'supervisor'];
+    $userRole = $_SESSION['user']['role'] ?? null;
+    
+    if (!in_array($userRole, $allowedRoles)) {
+        // Redirect without using BASE_URL to avoid issues
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+        $host = $_SERVER['HTTP_HOST'];
+        header("Location: " . $protocol . $host . "/dashboard");
+        exit;
+    }
+    
     require_once __DIR__ . '/../controllers/HRController.php';
     $controller = new HRController();
 
@@ -207,6 +223,8 @@ function handleHR()
     // Parse HR routes
     if (preg_match('#^/hr/dashboard$#', $path)) {
         $controller->dashboard();
+    } elseif (preg_match('#^/hr/payroll/(\d+)/pdf$#', $path, $matches)) {
+        $controller->payrollPDF($matches[1]);
     } elseif (preg_match('#^/hr/payroll/(\d+)/delete$#', $path, $matches)) {
         $controller->deletePayroll($matches[1]);
     } elseif (preg_match('#^/hr/payroll/(\d+)/edit$#', $path, $matches)) {
@@ -250,8 +268,8 @@ function handleHR()
     } elseif (preg_match('#^/hr/contracts$#', $path)) {
         $controller->contracts();
     } elseif (preg_match('#^/hr/trainings$#', $path)) {
-        $controller->trainings();
-    } elseif (preg_match('#^/hr/(\d+)/edit$#', $path, $matches)) {
+        $controller->trainings();    } elseif (preg_match('#^/hr/skills$#', $path)) {
+        $controller->skills();    } elseif (preg_match('#^/hr/(\d+)/edit$#', $path, $matches)) {
         $controller->edit($matches[1]);
     } elseif (preg_match('#^/hr/(\d+)$#', $path, $matches) && $method === 'PUT') {
         $controller->update($matches[1]);

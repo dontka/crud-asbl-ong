@@ -12,7 +12,7 @@ CREATE TABLE users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    role ENUM('admin', 'moderator', 'visitor') DEFAULT 'visitor',
+    role ENUM('admin', 'moderator', 'visitor', 'hr_manager', 'accountant', 'project_manager', 'crm_officer', 'member', 'volunteer', 'guest', 'supervisor', 'auditor', 'security_officer', 'it_officer', 'communication_officer', 'compliance_officer', 'marketplace_officer', 'support_officer', 'training_officer', 'quality_officer') DEFAULT 'visitor',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
