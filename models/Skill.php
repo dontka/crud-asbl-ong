@@ -10,8 +10,17 @@ class Skill extends Model
      */
     public function employees()
     {
-        return $this->belongsToMany(Employee::class, 'employee_skills', 'skill_id', 'employee_id')
-            ->withPivot('proficiency_level', 'acquired_date', 'expiry_date');
+        $id = $this->attributes['id'] ?? null;
+        if (empty($id)) {
+            return [];
+        }
+        $sql = "SELECT e.* FROM employees e 
+                INNER JOIN employee_skills es ON e.id = es.employee_id 
+                WHERE es.skill_id = ? 
+                ORDER BY e.name";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -64,5 +73,21 @@ class Skill extends Model
             $errors['name'] = 'Skill name is required';
         }
         return $errors;
+    }
+
+    /**
+     * Create a new skill
+     */
+    public function insert($data)
+    {
+        return parent::insert($data);
+    }
+
+    /**
+     * Update a skill
+     */
+    public function update($id, $data)
+    {
+        return parent::update($id, $data);
     }
 }

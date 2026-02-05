@@ -3,7 +3,12 @@ $pageTitle = $pageTitle ?? 'Gestion des Compétences';
 ?>
 
 <div class="main-content">
-    <!-- Header -->
+    
+ <!-- Skills List by Category -->
+    <?php if (!empty($categories)): ?>
+        <?php foreach ($categories as $category): ?>
+            <div class="chart-card" style="margin: var(--spacing-xl);">
+                <!-- Header -->
     <div class="dashboard-nav">
         <div class="nav-container">
             <div class="nav-left">
@@ -23,38 +28,6 @@ $pageTitle = $pageTitle ?? 'Gestion des Compétences';
             </div>
         </div>
     </div>
-
-    <!-- Statistics Cards -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); margin: var(--spacing-xl);">
-        <div class="chart-card" style="background: linear-gradient(135deg, rgba(123, 97, 255, 0.1), rgba(155, 137, 255, 0.05));">
-            <div class="chart-content">
-                <div style="display: flex; justify-content: space-between; align-items: start;">
-                    <div>
-                        <p style="color: var(--gray-600); font-size: var(--font-size-sm); margin: 0 0 var(--spacing-xs) 0;">Total Compétences</p>
-                        <h2 style="color: var(--primary); font-size: var(--font-size-4xl); margin: 0;"><?php echo htmlspecialchars($totalSkills ?? 0); ?></h2>
-                    </div>
-                    <i class="fas fa-star" style="font-size: 2rem; color: rgba(123, 97, 255, 0.3);"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="chart-card" style="background: linear-gradient(135deg, rgba(0, 196, 204, 0.1), rgba(0, 212, 170, 0.05));">
-            <div class="chart-content">
-                <div style="display: flex; justify-content: space-between; align-items: start;">
-                    <div>
-                        <p style="color: var(--gray-600); font-size: var(--font-size-sm); margin: 0 0 var(--spacing-xs) 0;">Catégories</p>
-                        <h2 style="color: var(--secondary); font-size: var(--font-size-4xl); margin: 0;"><?php echo htmlspecialchars(count($categories ?? [])); ?></h2>
-                    </div>
-                    <i class="fas fa-tags" style="font-size: 2rem; color: rgba(0, 196, 204, 0.3);"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Skills List by Category -->
-    <?php if (!empty($categories)): ?>
-        <?php foreach ($categories as $category): ?>
-            <div class="chart-card" style="margin: var(--spacing-xl);">
                 <div class="chart-header">
                     <h3><i class="fas fa-folder" style="margin-right: 0.5rem;"></i><?php echo htmlspecialchars($category); ?></h3>
                 </div>
@@ -131,6 +104,34 @@ $pageTitle = $pageTitle ?? 'Gestion des Compétences';
         </div>
     <?php endif; ?>
 
+    <!-- Statistics Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); margin: var(--spacing-xl);">
+        <div class="chart-card" style="background: linear-gradient(135deg, rgba(123, 97, 255, 0.1), rgba(155, 137, 255, 0.05));">
+            <div class="chart-content">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <p style="color: var(--gray-600); font-size: var(--font-size-sm); margin: 0 0 var(--spacing-xs) 0;">Total Compétences</p>
+                        <h2 style="color: var(--primary); font-size: var(--font-size-4xl); margin: 0;"><?php echo htmlspecialchars($totalSkills ?? 0); ?></h2>
+                    </div>
+                    <i class="fas fa-star" style="font-size: 2rem; color: rgba(123, 97, 255, 0.3);"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-card" style="background: linear-gradient(135deg, rgba(0, 196, 204, 0.1), rgba(0, 212, 170, 0.05));">
+            <div class="chart-content">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <p style="color: var(--gray-600); font-size: var(--font-size-sm); margin: 0 0 var(--spacing-xs) 0;">Catégories</p>
+                        <h2 style="color: var(--secondary); font-size: var(--font-size-4xl); margin: 0;"><?php echo htmlspecialchars(count($categories ?? [])); ?></h2>
+                    </div>
+                    <i class="fas fa-tags" style="font-size: 2rem; color: rgba(0, 196, 204, 0.3);"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
     <!-- Quick Stats -->
     <div class="chart-card" style="margin: var(--spacing-xl);">
         <div class="chart-header">
@@ -139,13 +140,11 @@ $pageTitle = $pageTitle ?? 'Gestion des Compétences';
         <div class="chart-content">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg);">
                 <?php 
-                $topSkills = array_slice(
-                    array_sort($skills ?? [], function($a, $b) {
-                        return ($b['employee_count'] ?? 0) - ($a['employee_count'] ?? 0);
-                    }),
-                    0,
-                    5
-                );
+                $topSkills = $skills ?? [];
+                usort($topSkills, function($a, $b) {
+                    return ($b['employee_count'] ?? 0) - ($a['employee_count'] ?? 0);
+                });
+                $topSkills = array_slice($topSkills, 0, 5);
                 ?>
                 <div>
                     <h4 style="color: var(--gray-700); margin-bottom: var(--spacing-md);">Top 5 Compétences Requises</h4>

@@ -18,7 +18,7 @@ class HRController extends Controller
         try {
             // Get statistics
             $employee = new Employee();
-            $allEmployees = $employee->findAll(['status' => 'active']);
+            $allEmployees = $employee->findAll(['employment_status' => 'active']);
             $totalEmployees = count($allEmployees);
 
             // Get employees on leave today
@@ -51,8 +51,15 @@ class HRController extends Controller
             $allEvaluations = $evaluation->findAll();
             $upcomingEvaluations = count($allEvaluations); // Simplified
 
-            // Get departments (simplified - no department column)
+            // Get departments
             $departments = [];
+            foreach ($allEmployees as $emp) {
+                $dept = $emp['department'] ?? 'Non défini';
+                if (!isset($departments[$dept])) {
+                    $departments[$dept] = 0;
+                }
+                $departments[$dept]++;
+            }
 
             return $this->renderPage('hr/dashboard', [
                 'totalEmployees' => $totalEmployees,
@@ -79,7 +86,7 @@ class HRController extends Controller
             $department = $_GET['department'] ?? null;
             $search = $_GET['search'] ?? null;
 
-            // Get employees (no department filtering - column doesn't exist)
+            // Get employees
             $employee = new Employee();
             $allEmployees = $employee->findAll();
 
@@ -98,8 +105,6 @@ class HRController extends Controller
             $employeesData = [];
             foreach ($allEmployees as $emp) {
                 $obj = (object) $emp;
-                $obj->position = 'N/A'; // No position column in database
-                $obj->department = 'N/A'; // No department column in database
                 $employeesData[] = $obj;
             }
 
@@ -110,8 +115,15 @@ class HRController extends Controller
             $offset = ($page - 1) * $limit;
             $employees = (object) ['data' => array_slice($employeesData, $offset, $limit)];
 
-            // Get departments list (empty for now - no department column)
+            // Get departments list from employees
             $departments = [];
+            foreach ($allEmployees as $emp) {
+                $dept = $emp['department'] ?? 'Non défini';
+                if (!isset($departments[$dept])) {
+                    $departments[$dept] = 0;
+                }
+                $departments[$dept]++;
+            }
 
             return $this->renderPage('hr/employees/index', [
                 'employees' => $employees,
@@ -508,24 +520,117 @@ class HRController extends Controller
     {
         try {
             $evaluation = new Evaluation();
-            $evaluations = $evaluation->findAll();
-
-            // Enrich evaluations with employee data
             $employee = new Employee();
+            
+            // Get filter parameters
+            $selectedDepartment = $_GET['department'] ?? null;
+            $selectedYear = $_GET['year'] ?? date('Y');
+            $evaluationStatus = $_GET['status'] ?? null;
+
+            // Get all evaluations
+            $evaluations = $evaluation->findAll();
+            
+            // Get all employees with their details
+            $allEmployees = $employee->findAll(['employment_status' => 'active']);
+            
+            // Build departments list
+            $departments = [];
+            $evaluationsByDept = [];
+            $employeesByDept = [];
+            
+            foreach ($allEmployees as $emp) {
+                $dept = $emp['department'] ?? 'Non défini';
+                if (!isset($departments[$dept])) {
+                    $departments[$dept] = 0;
+                    $employeesByDept[$dept] = [];
+                }
+                $departments[$dept]++;
+                $employeesByDept[$dept][] = $emp;
+            }
+            
+            // Enrich evaluations with employee data
             foreach ($evaluations as &$eval_data) {
                 if (!empty($eval_data['employee_id'])) {
                     $emp = $employee->findById($eval_data['employee_id']);
-                    $eval_data['employee_name'] = ($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? '');
+                    if ($emp) {
+                        $eval_data['employee_name'] = ($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? '');
+                        $eval_data['department'] = $emp['department'] ?? 'Non défini';
+                    } else {
+                        $eval_data['employee_name'] = 'N/A';
+                        $eval_data['department'] = 'N/A';
+                    }
                 } else {
                     $eval_data['employee_name'] = 'N/A';
+                    $eval_data['department'] = 'N/A';
                 }
+                
+                // Group by department
+                $dept = $eval_data['department'];
+                if (!isset($evaluationsByDept[$dept])) {
+                    $evaluationsByDept[$dept] = [];
+                }
+                $evaluationsByDept[$dept][] = $eval_data;
+            }
+            
+            // Filter by department if selected
+            if ($selectedDepartment) {
+                $filteredEvaluations = array_filter($evaluations, function($e) use ($selectedDepartment) {
+                    return ($e['department'] ?? null) === $selectedDepartment;
+                });
+            } else {
+                $filteredEvaluations = $evaluations;
+            }
+            
+            // Filter by year if needed
+            if ($selectedYear) {
+                $filteredEvaluations = array_filter($filteredEvaluations, function($e) use ($selectedYear) {
+                    return ($e['evaluation_year'] ?? null) == $selectedYear;
+                });
+            }
+            
+            // Filter by status if needed
+            if ($evaluationStatus) {
+                $filteredEvaluations = array_filter($filteredEvaluations, function($e) use ($evaluationStatus) {
+                    return ($e['status'] ?? null) === $evaluationStatus;
+                });
+            }
+            
+            // Calculate statistics based on FILTERED evaluations
+            $scoresWithValues = array_filter(array_column($filteredEvaluations, 'overall_score'), function($score) {
+                return !empty($score) && $score !== null;
+            });
+            
+            $stats = [
+                'total_employees' => count($allEmployees),
+                'total_evaluations' => count($filteredEvaluations),
+                'departments' => count($departments),
+                'average_score' => count($scoresWithValues) > 0 ? array_sum($scoresWithValues) / count($scoresWithValues) : 0
+            ];
+            
+            // Get years for filter
+            $years = array_unique(array_column($evaluations, 'evaluation_year'));
+            sort($years);
+            if (empty($years)) {
+                $years = [date('Y')];
             }
 
             return $this->renderPage('hr/evaluations/index', [
-                'evaluations' => $evaluations,
+                'evaluations' => $filteredEvaluations,
+                'allEvaluations' => $evaluations,
+                'allEmployees' => $allEmployees,
+                'departments' => $departments,
+                'employeesByDept' => $employeesByDept,
+                'evaluationsByDept' => $evaluationsByDept,
+                'selectedDepartment' => $selectedDepartment,
+                'selectedYear' => $selectedYear,
+                'evaluationStatus' => $evaluationStatus,
+                'years' => $years,
+                'stats' => $stats,
                 'pageTitle' => 'Gestion des Évaluations'
             ]);
         } catch (\Exception $e) {
+            error_log("EXCEPTION in evaluations(): " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine());
+            error_log("Trace: " . $e->getTraceAsString());
             $this->setFlash('error', 'Erreur: ' . $e->getMessage());
             return $this->redirect('/dashboard');
         }
@@ -534,19 +639,27 @@ class HRController extends Controller
     /**
      * Create evaluation
      */
-    public function createEvaluation($employeeId)
+    public function createEvaluation($employeeId = null)
     {
         try {
             $employee = new Employee();
-            $emp = $employee->findById($employeeId);
-
-            if (!$emp) {
-                $this->setFlash('error', 'Employé non trouvé');
-                return $this->redirect('/hr/evaluations');
+            $allEmployees = null;
+            $selectedEmployee = null;
+            
+            if ($employeeId) {
+                $selectedEmployee = $employee->findById($employeeId);
+                if (!$selectedEmployee) {
+                    $this->setFlash('error', 'Employé non trouvé');
+                    return $this->redirect('/hr/evaluations');
+                }
+            } else {
+                // Get all active employees
+                $allEmployees = $employee->findAll(['employment_status' => 'active']);
             }
 
             return $this->renderPage('hr/evaluations/create', [
-                'employee' => $emp,
+                'employee' => $selectedEmployee,
+                'allEmployees' => $allEmployees,
                 'pageTitle' => 'Créer une Évaluation'
             ]);
         } catch (\Exception $e) {
@@ -563,7 +676,6 @@ class HRController extends Controller
         try {
             $evaluation = new Evaluation();
             $evaluation->save($_POST);
-            $evaluation->save();
 
             $this->setFlash('success', 'Évaluation créée avec succès');
             return $this->redirect('/hr/evaluations');
@@ -986,7 +1098,7 @@ class HRController extends Controller
                     $payroll->save($data);
                     $this->setFlash('success', 'Fiche de paie mise à jour');
                 } else {
-                    $payroll->insert($data);
+                    $payroll->save($data);
                     $this->setFlash('success', 'Fiche de paie créée');
                 }
                 return $this->redirect('/hr/payroll');
@@ -1247,4 +1359,74 @@ class HRController extends Controller
             return $this->redirect('/hr');
         }
     }
-}
+
+    /**
+     * Create or edit a skill
+     */
+    public function editSkill($id = null)
+    {
+        try {
+            $skill = new Skill();
+            $skillData = null;
+
+            if ($id) {
+                $skillData = $skill->findById($id);
+                if (!$skillData) {
+                    $this->setFlash('error', 'Compétence non trouvée');
+                    return $this->redirect('/hr/skills');
+                }
+            }
+
+            // Handle form submission
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $data = [
+                    'name' => $_POST['name'] ?? '',
+                    'category' => $_POST['category'] ?? '',
+                    'description' => $_POST['description'] ?? ''
+                ];
+
+                $errors = $skill->validate($data);
+                if (!empty($errors)) {
+                    return $this->renderPage('hr/skills-edit', [
+                        'skill' => $skillData,
+                        'errors' => $errors,
+                        'pageTitle' => $id ? 'Éditer Compétence' : 'Nouvelle Compétence'
+                    ]);
+                }
+
+                if ($id) {
+                    $skill->update($id, $data);
+                    $this->setFlash('success', 'Compétence mise à jour avec succès');
+                } else {
+                    $skill->insert($data);
+                    $this->setFlash('success', 'Compétence créée avec succès');
+                }
+
+                return $this->redirect('/hr/skills');
+            }
+
+            return $this->renderPage('hr/skills-edit', [
+                'skill' => $skillData,
+                'pageTitle' => $id ? 'Éditer Compétence' : 'Nouvelle Compétence'
+            ]);
+        } catch (\Exception $e) {
+            $this->setFlash('error', 'Erreur: ' . $e->getMessage());
+            return $this->redirect('/hr/skills');
+        }
+    }
+
+    /**
+     * Delete a skill
+     */
+    public function deleteSkill($id)
+    {
+        try {
+            $skill = new Skill();
+            $skill->delete($id);
+            $this->setFlash('success', 'Compétence supprimée avec succès');
+            return $this->redirect('/hr/skills');
+        } catch (\Exception $e) {
+            $this->setFlash('error', 'Erreur: ' . $e->getMessage());
+            return $this->redirect('/hr/skills');
+        }
+    }}

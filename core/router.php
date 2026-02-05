@@ -201,16 +201,39 @@ function handleHR()
         session_start();
     }
     
-    $allowedRoles = ['admin', 'moderator', 'hr_manager', 'supervisor'];
+    error_log("=== handleHR() CALLED ===");
+    error_log("REQUEST_URI: " . $_SERVER['REQUEST_URI']);
+    error_log("user_id isset: " . (isset($_SESSION['user_id']) ? "YES" : "NO"));
+    error_log("user_id value: " . ($_SESSION['user_id'] ?? 'NULL'));
+    error_log("user role: " . ($_SESSION['user']['role'] ?? 'NULL'));
+    
+    // First, check if user is authenticated at all
+    if (!isset($_SESSION['user_id'])) {
+        error_log("REDIRECT: Not authenticated -> /login");
+        // User not authenticated, redirect to login
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+        $host = $_SERVER['HTTP_HOST'];
+        header("Location: " . $protocol . $host . "/login");
+        exit;
+    }
+    
+    // For now, allow all authenticated users to access HR (can be restricted later)
+    $allowedRoles = ['admin', 'moderator', 'hr_manager', 'supervisor', 'hr', 'manager', 'user', 'visitor'];
     $userRole = $_SESSION['user']['role'] ?? null;
     
-    if (!in_array($userRole, $allowedRoles)) {
+    error_log("userRole: " . ($userRole ?? 'NULL'));
+    error_log("in_array result: " . (in_array($userRole, $allowedRoles) ? "YES" : "NO"));
+    
+    if (!in_array($userRole, $allowedRoles) || empty($userRole)) {
+        error_log("REDIRECT: Invalid role or empty -> /dashboard");
         // Redirect without using BASE_URL to avoid issues
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
         $host = $_SERVER['HTTP_HOST'];
         header("Location: " . $protocol . $host . "/dashboard");
         exit;
     }
+    
+    error_log("PASSED authentication and role check, proceeding to controller");
     
     require_once __DIR__ . '/../controllers/HRController.php';
     $controller = new HRController();
@@ -249,10 +272,17 @@ function handleHR()
         $controller->absences();
     } elseif (preg_match('#^/hr/evaluations/(\d+)/create$#', $path, $matches)) {
         $controller->createEvaluation($matches[1]);
-    } elseif (preg_match('#^/hr/evaluations$#', $path) && $method === 'POST') {
+    } elseif (preg_match('#^/hr/evaluations/?$#', $path) && $method === 'POST') {
         $controller->storeEvaluation();
-    } elseif (preg_match('#^/hr/evaluations$#', $path)) {
-        $controller->evaluations();
+    } elseif (preg_match('#^/hr/evaluations/?$#', $path)) {
+        // DEBUG
+        error_log("ROUTE MATCHED: /hr/evaluations - calling evaluations()");
+        try {
+            $controller->evaluations();
+        } catch (Exception $e) {
+            error_log("EXCEPTION in evaluations(): " . $e->getMessage());
+            throw $e;
+        }
     } elseif (preg_match('#^/hr/contract/(\d+)/delete$#', $path, $matches)) {
         $controller->deleteContract($matches[1]);
     } elseif (preg_match('#^/hr/contract/(\d+)/edit$#', $path, $matches)) {
@@ -268,8 +298,16 @@ function handleHR()
     } elseif (preg_match('#^/hr/contracts$#', $path)) {
         $controller->contracts();
     } elseif (preg_match('#^/hr/trainings$#', $path)) {
-        $controller->trainings();    } elseif (preg_match('#^/hr/skills$#', $path)) {
-        $controller->skills();    } elseif (preg_match('#^/hr/(\d+)/edit$#', $path, $matches)) {
+        $controller->trainings();
+    } elseif (preg_match('#^/hr/skills/(\d+)/delete$#', $path, $matches)) {
+        $controller->deleteSkill($matches[1]);
+    } elseif (preg_match('#^/hr/skills/(\d+)/edit$#', $path, $matches)) {
+        $controller->editSkill($matches[1]);
+    } elseif (preg_match('#^/hr/skills/create$#', $path)) {
+        $controller->editSkill();
+    } elseif (preg_match('#^/hr/skills$#', $path)) {
+        $controller->skills();
+    } elseif (preg_match('#^/hr/(\d+)/edit$#', $path, $matches)) {
         $controller->edit($matches[1]);
     } elseif (preg_match('#^/hr/(\d+)$#', $path, $matches) && $method === 'PUT') {
         $controller->update($matches[1]);
